@@ -1,9 +1,10 @@
 # vendor
 
-このディレクトリにはローカル依存の`libultrahdr-wasm`を配置します。
+このディレクトリには`libultrahdr-wasm`リポジトリを配置します。
 
 ```
 git clone https://github.com/MONOGRID/libultrahdr-wasm.git vendor/libultrahdr-wasm
+make ultrahdr
 ```
 
-リポジトリ内に`package.json`が存在する状態で`npm install`を実行してください。
+ビルド成果物は`public/ultrahdr`にコピーされ、`public/ultrahdr/libultrahdr-esm.js`が読み込まれます。

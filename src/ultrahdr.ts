@@ -18,8 +18,21 @@ const resolveEncoder = (module: Record<string, unknown>) => {
     | undefined
 }
 
+const loadModule = async () => {
+  const moduleUrl = '/ultrahdr/libultrahdr-esm.js'
+  try {
+    const loaded = (await import(/* @vite-ignore */ moduleUrl)) as Record<string, unknown>
+    return loaded
+  } catch (error) {
+    throw new Error(
+      'UltraHDRモジュールの読み込みに失敗しました。`make ultrahdr`でビルドしてください。',
+      { cause: error },
+    )
+  }
+}
+
 export const encodeUltraHDR = async (base: ImageData, gainmap: ImageData) => {
-  const module = (await import('libultrahdr-wasm')) as Record<string, unknown>
+  const module = await loadModule()
   const init = module.default
   if (typeof init === 'function') {
     await (init as () => Promise<void>)()
@@ -40,5 +53,6 @@ export const encodeUltraHDR = async (base: ImageData, gainmap: ImageData) => {
       : result instanceof ArrayBuffer
         ? new Uint8Array(result)
         : result.data
-  return new Blob([data], { type: 'image/jpeg' })
+  const arrayBuffer = data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength)
+  return new Blob([arrayBuffer], { type: 'image/jpeg' })
 }
