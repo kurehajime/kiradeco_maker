@@ -258,15 +258,6 @@ function App() {
             {previewUrl && (
               <img className="preview" src={previewUrl} alt="UltraHDR preview" />
             )}
-            {downloadUrl && (
-              <a
-                className="download"
-                href={downloadUrl}
-                download={imageName ? imageName.replace(/\.[^.]+$/, '') + '-ultrahdr.jpg' : 'ultrahdr.jpg'}
-              >
-                UltraHDRをダウンロード
-              </a>
-            )}
             {error && <p className="error">{error}</p>}
           </div>
         </aside>
