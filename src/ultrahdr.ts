@@ -1,25 +1,23 @@
-type UltraHDREncoder = (payload: {
-  base: ImageData
-  gainmap: ImageData
-  width: number
-  height: number
-}) => Promise<Uint8Array | ArrayBuffer | { data: Uint8Array } | Uint8Array>
-
-const resolveEncoder = (module: Record<string, unknown>) => {
-  const candidates = [
-    module.encodeUltraHDR,
-    module.encodeUHDR,
-    module.encode,
-    module.default && (module.default as Record<string, unknown>).encodeUltraHDR,
-    module.default && (module.default as Record<string, unknown>).encode,
-  ]
-  return candidates.find((candidate) => typeof candidate === 'function') as
-    | UltraHDREncoder
-    | undefined
-}
+type UltraHDRModule = () => Promise<{
+  appendGainMap: (
+    width: number,
+    height: number,
+    sdr: Uint8Array,
+    sdrLength: number,
+    gainmap: Uint8Array,
+    gainmapLength: number,
+    gainMapMax: number,
+    gainMapMin: number,
+    mapGamma: number,
+    offsetSdr: number,
+    offsetHdr: number,
+    hdrCapacityMin: number,
+    hdrCapacityMax: number,
+  ) => Uint8Array
+}>
 
 const loadModule = async () => {
-  const moduleUrl = '/ultrahdr/libultrahdr-esm.js'
+  const moduleUrl = new URL('/ultrahdr/libultrahdr-esm.js', window.location.origin).href
   try {
     const loaded = (await import(/* @vite-ignore */ moduleUrl)) as Record<string, unknown>
     return loaded
@@ -34,25 +32,66 @@ const loadModule = async () => {
 export const encodeUltraHDR = async (base: ImageData, gainmap: ImageData) => {
   const module = await loadModule()
   const init = module.default
-  if (typeof init === 'function') {
-    await (init as () => Promise<void>)()
+  if (typeof init !== 'function') {
+    throw new Error('libultrahdr-wasmの初期化関数が見つかりません。')
   }
-  const encoder = resolveEncoder(module)
-  if (!encoder) {
-    throw new Error('libultrahdr-wasmのエンコーダーが見つかりません。')
+  const instance = await (init as UltraHDRModule)()
+  if (!instance?.appendGainMap) {
+    throw new Error('libultrahdr-wasmのappendGainMapが見つかりません。')
   }
-  const result = await encoder({
-    base,
-    gainmap,
-    width: base.width,
-    height: base.height,
-  })
-  const data =
-    result instanceof Uint8Array
-      ? result
-      : result instanceof ArrayBuffer
-        ? new Uint8Array(result)
-        : result.data
-  const arrayBuffer = data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength)
+  const [sdrBytes, gainmapBytes] = await Promise.all([
+    imageDataToJpeg(base),
+    imageDataToJpeg(gainmap),
+  ])
+  const metadata = {
+    gainMapMax: 1,
+    gainMapMin: 0,
+    mapGamma: 1,
+    offsetSdr: 0,
+    offsetHdr: 0,
+    hdrCapacityMin: 0,
+    hdrCapacityMax: 1,
+  }
+  const result = instance.appendGainMap(
+    base.width,
+    base.height,
+    sdrBytes,
+    sdrBytes.length,
+    gainmapBytes,
+    gainmapBytes.length,
+    metadata.gainMapMax,
+    metadata.gainMapMin,
+    metadata.mapGamma,
+    metadata.offsetSdr,
+    metadata.offsetHdr,
+    metadata.hdrCapacityMin,
+    metadata.hdrCapacityMax,
+  )
+  const arrayBuffer = result.buffer.slice(result.byteOffset, result.byteOffset + result.byteLength)
   return new Blob([arrayBuffer], { type: 'image/jpeg' })
+}
+
+const imageDataToJpeg = async (imageData: ImageData) => {
+  const canvas = document.createElement('canvas')
+  canvas.width = imageData.width
+  canvas.height = imageData.height
+  const context = canvas.getContext('2d')
+  if (!context) {
+    throw new Error('JPEG変換用のキャンバスが作成できません。')
+  }
+  context.putImageData(imageData, 0, 0)
+  const blob = await new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob(
+      (result) => {
+        if (result) {
+          resolve(result)
+        } else {
+          reject(new Error('JPEGの生成に失敗しました。'))
+        }
+      },
+      'image/jpeg',
+      0.95,
+    )
+  })
+  return new Uint8Array(await blob.arrayBuffer())
 }
