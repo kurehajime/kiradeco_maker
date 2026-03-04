@@ -51,7 +51,7 @@ export const encodeUltraHDR = async (base: ImageData, gainmap: ImageData) => {
     gainMapMin: 0,
     mapGamma: 1,
     offsetSdr: 0,
-    offsetHdr: 0.25,
+    offsetHdr: 0,
     hdrCapacityMin: 0,
     hdrCapacityMax: 32,
   }
