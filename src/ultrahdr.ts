@@ -67,8 +67,8 @@ export const encodeUltraHDR = async (base: ImageData, gainmap: ImageData) => {
     metadata.hdrCapacityMin,
     metadata.hdrCapacityMax,
   )
-  const arrayBuffer = result.buffer.slice(result.byteOffset, result.byteOffset + result.byteLength)
-  return new Blob([arrayBuffer], { type: 'image/jpeg' })
+  const copied = Uint8Array.from(result)
+  return new Blob([copied], { type: 'image/jpeg' })
 }
 
 const imageDataToJpeg = async (imageData: ImageData) => {
