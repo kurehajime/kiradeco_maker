@@ -163,9 +163,10 @@ function App() {
     const output = new Uint8ClampedArray(drawData.data.length)
     for (let index = 0; index < drawData.data.length; index += 4) {
       const alpha = drawData.data[index + 3]
-      output[index] = alpha
-      output[index + 1] = alpha
-      output[index + 2] = alpha
+      const intensity = alpha > 0 ? 255 : 0
+      output[index] = intensity
+      output[index + 1] = intensity
+      output[index + 2] = intensity
       output[index + 3] = 255
     }
     return new ImageData(output, drawCanvas.width, drawCanvas.height)
