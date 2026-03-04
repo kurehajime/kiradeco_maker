@@ -236,7 +236,7 @@ function App() {
               <input
                 type="range"
                 min={4}
-                max={48}
+                max={150}
                 value={brushSize}
                 onChange={(event) => setBrushSize(Number(event.target.value))}
               />
