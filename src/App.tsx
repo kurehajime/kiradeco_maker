@@ -2,6 +2,7 @@ import type { ChangeEvent } from 'react'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import './App.css'
 import { encodeUltraHDR } from './ultrahdr'
+import hologramUrl from './assets/kira.png'
 
 function App() {
   const [imageName, setImageName] = useState<string | null>(null)
@@ -13,6 +14,11 @@ function App() {
   const drawCanvasRef = useRef<HTMLCanvasElement | null>(null)
   const isDrawingRef = useRef(false)
   const lastPointRef = useRef<{ x: number; y: number } | null>(null)
+  const hologramCacheRef = useRef<{
+    width: number
+    height: number
+    data: Uint8ClampedArray
+  } | null>(null)
 
   const hasImage = useMemo(() => {
     const canvas = baseCanvasRef.current
@@ -39,6 +45,44 @@ function App() {
     URL.revokeObjectURL(imageUrl)
     return image
   }, [])
+
+  const loadImageFromUrl = useCallback(async (url: string) => {
+    const image = new Image()
+    await new Promise<void>((resolve, reject) => {
+      image.onload = () => resolve()
+      image.onerror = () => reject(new Error('ホログラム画像の読み込みに失敗しました。'))
+      image.src = url
+    })
+    return image
+  }, [])
+
+  const loadHologramPattern = useCallback(
+    async (width: number, height: number) => {
+      const cached = hologramCacheRef.current
+      if (cached && cached.width === width && cached.height === height) {
+        return cached.data
+      }
+      const image = await loadImageFromUrl(hologramUrl)
+      const canvas = document.createElement('canvas')
+      canvas.width = width
+      canvas.height = height
+      const context = canvas.getContext('2d')
+      if (!context) {
+        throw new Error('ホログラム描画用のキャンバスが作成できません。')
+      }
+      const tileSize = Math.min(width, height)
+      for (let y = 0; y < height; y += tileSize) {
+        for (let x = 0; x < width; x += tileSize) {
+          context.drawImage(image, x, y, tileSize, tileSize)
+        }
+      }
+      const patternData = context.getImageData(0, 0, width, height).data
+      const cachedData = new Uint8ClampedArray(patternData)
+      hologramCacheRef.current = { width, height, data: cachedData }
+      return cachedData
+    },
+    [loadImageFromUrl],
+  )
 
   const resetCanvases = useCallback((width: number, height: number) => {
     const baseCanvas = baseCanvasRef.current
@@ -154,15 +198,42 @@ function App() {
     if (!context) return null
     const drawData = context.getImageData(0, 0, drawCanvas.width, drawCanvas.height)
     const output = new Uint8ClampedArray(drawData.data.length)
+    const { width, height } = drawCanvas
     for (let index = 0; index < drawData.data.length; index += 4) {
       const alpha = drawData.data[index + 3]
-      output[index] = alpha
-      output[index + 1] = alpha
-      output[index + 2] = alpha
+      const value = Math.round(alpha)
+      output[index] = value
+      output[index + 1] = value
+      output[index + 2] = value
       output[index + 3] = 255
     }
-    return new ImageData(output, drawCanvas.width, drawCanvas.height)
+    return new ImageData(output, width, height)
   }, [])
+
+  const applyHologramPattern = useCallback(async () => {
+    const drawCanvas = drawCanvasRef.current
+    if (!drawCanvas) return
+    const context = drawCanvas.getContext('2d')
+    if (!context) return
+    const drawData = context.getImageData(0, 0, drawCanvas.width, drawCanvas.height)
+    const patternData = await loadHologramPattern(drawCanvas.width, drawCanvas.height)
+    for (let index = 0; index < drawData.data.length; index += 4) {
+      const alpha = drawData.data[index + 3]
+      const pattern =
+        (patternData[index] + patternData[index + 1] + patternData[index + 2]) /
+        (3 * 255)
+      const contrasted = Math.min(1, Math.max(0, (pattern - 0.3) / 0.7))
+      const shaped = Math.pow(contrasted, 2.6)
+      const intensity = Math.min(255, Math.round(255 * Math.min(1, shaped * 2.5)))
+      const baseAlpha = alpha / 255
+      const hologramAlpha = 0.2 + Math.min(1, shaped * 2) * 0.8
+      drawData.data[index] = intensity
+      drawData.data[index + 1] = intensity
+      drawData.data[index + 2] = intensity
+      drawData.data[index + 3] = Math.round(255 * Math.max(baseAlpha, hologramAlpha))
+    }
+    context.putImageData(drawData, 0, 0)
+  }, [loadHologramPattern])
 
   const handleGenerate = useCallback(async () => {
     const baseCanvas = baseCanvasRef.current
@@ -235,6 +306,9 @@ function App() {
               />
               <strong>{brushSize}px</strong>
             </label>
+            <button type="button" onClick={applyHologramPattern} disabled={!hasImage || isGenerating}>
+              ホログラムを線に反映
+            </button>
             <button type="button" onClick={handleClear} disabled={!hasImage}>
               線をクリア
             </button>
@@ -242,9 +316,7 @@ function App() {
 
           <div className="panel">
             <h2>UltraHDR</h2>
-            <p className="panel__hint">
-              UltraHDR生成後、ダウンロードリンクが表示されます。
-            </p>
+            <p className="panel__hint">線にホログラム模様を適用して輝度を作ります。</p>
             <button type="button" onClick={handleGenerate} disabled={!hasImage || isGenerating}>
               {isGenerating ? '生成中…' : 'UltraHDRを生成'}
             </button>

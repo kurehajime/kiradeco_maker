@@ -47,13 +47,13 @@ export const encodeUltraHDR = async (base: ImageData, gainmap: ImageData) => {
     imageDataToJpeg(gainmap),
   ])
   const metadata = {
-    gainMapMax: 32,
+    gainMapMax: 64,
     gainMapMin: 0,
     mapGamma: 1,
     offsetSdr: 0,
     offsetHdr: 0,
     hdrCapacityMin: 0,
-    hdrCapacityMax: 32,
+    hdrCapacityMax: 64,
   }
   const result = instance.appendGainMap(
     base.width,
