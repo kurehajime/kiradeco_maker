@@ -59,18 +59,23 @@
   overflow: hidden;
   border: 1px solid #29344f;
   background: #0f172a;
+  width: 100%;
   min-height: 320px;
 }
 
+.canvas-stack--ready {
+  min-height: 0;
+}
+
 .canvas {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
 }
 
 .canvas--draw {
-  position: absolute;
-  inset: 0;
   touch-action: none;
 }
 
@@ -117,6 +122,28 @@
 
 .slider input {
   width: 100%;
+}
+
+.tool-picker {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.tool-picker legend {
+  padding: 0;
+  margin-right: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.tool-picker label {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  font-size: 0.95rem;
 }
 
 button {

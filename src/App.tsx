@@ -1,8 +1,11 @@
 import type { ChangeEvent } from 'react'
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type { CSSProperties } from 'react'
 import './App.css'
 import { encodeUltraHDR } from './ultrahdr'
 import hologramUrl from './assets/kira.png'
+
+type StrokeType = 'line' | 'heart'
 
 function App() {
   const [imageName, setImageName] = useState<string | null>(null)
@@ -10,8 +13,11 @@ function App() {
   const [error, setError] = useState<string | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
   const [brushSize, setBrushSize] = useState(16)
+  const [strokeType, setStrokeType] = useState<StrokeType>('line')
+  const [canvasSize, setCanvasSize] = useState<{ width: number; height: number } | null>(null)
   const baseCanvasRef = useRef<HTMLCanvasElement | null>(null)
   const drawCanvasRef = useRef<HTMLCanvasElement | null>(null)
+  const heartImageRef = useRef<HTMLImageElement | null>(null)
   const isDrawingRef = useRef(false)
   const lastPointRef = useRef<{ x: number; y: number } | null>(null)
   const hologramCacheRef = useRef<{
@@ -96,6 +102,7 @@ function App() {
     if (drawContext) {
       drawContext.clearRect(0, 0, width, height)
     }
+    setCanvasSize({ width, height })
   }, [])
 
   const handleFileChange = useCallback(
@@ -117,10 +124,18 @@ function App() {
         setImageName(file.name)
       } catch (loadError) {
         setError(loadError instanceof Error ? loadError.message : '画像の読み込みに失敗しました。')
+        setCanvasSize(null)
       }
     },
     [loadImage, resetCanvases, revokePreviewUrl],
   )
+
+  const canvasStackStyle = useMemo<CSSProperties | undefined>(() => {
+    if (!canvasSize) return undefined
+    return {
+      aspectRatio: `${canvasSize.width} / ${canvasSize.height}`,
+    }
+  }, [canvasSize])
 
   const getCanvasPoint = useCallback((event: React.PointerEvent<HTMLCanvasElement>) => {
     const canvas = drawCanvasRef.current
@@ -134,21 +149,49 @@ function App() {
     }
   }, [])
 
+  useEffect(() => {
+    const image = new Image()
+    image.src = `${import.meta.env.BASE_URL}heart.svg`
+    heartImageRef.current = image
+  }, [])
+
   const drawStroke = useCallback(
     (from: { x: number; y: number }, to: { x: number; y: number }) => {
       const drawCanvas = drawCanvasRef.current
       const context = drawCanvas?.getContext('2d')
       if (!context) return
-      context.strokeStyle = 'rgba(255, 255, 255, 0.95)'
-      context.lineWidth = brushSize
-      context.lineCap = 'round'
-      context.lineJoin = 'round'
-      context.beginPath()
-      context.moveTo(from.x, from.y)
-      context.lineTo(to.x, to.y)
-      context.stroke()
+      if (strokeType === 'line') {
+        context.strokeStyle = 'rgba(255, 255, 255, 0.95)'
+        context.lineWidth = brushSize
+        context.lineCap = 'round'
+        context.lineJoin = 'round'
+        context.beginPath()
+        context.moveTo(from.x, from.y)
+        context.lineTo(to.x, to.y)
+        context.stroke()
+        return
+      }
+      const heartImage = heartImageRef.current
+      if (!heartImage?.complete || heartImage.naturalWidth === 0 || heartImage.naturalHeight === 0) {
+        return
+      }
+      const spacing = Math.max(2, brushSize * 0.35)
+      const deltaX = to.x - from.x
+      const deltaY = to.y - from.y
+      const distance = Math.hypot(deltaX, deltaY)
+      const steps = Math.max(1, Math.ceil(distance / spacing))
+      const drawWidth = brushSize
+      const drawHeight = brushSize * (heartImage.naturalHeight / heartImage.naturalWidth)
+      for (let step = 0; step <= steps; step += 1) {
+        const ratio = step / steps
+        const x = from.x + deltaX * ratio
+        const y = from.y + deltaY * ratio
+        context.globalAlpha = 0.95
+        context.drawImage(heartImage, x - drawWidth / 2, y - drawHeight / 2, drawWidth, drawHeight)
+        context.globalAlpha = 1
+      }
     },
-    [brushSize],
+    [brushSize, strokeType],
   )
 
   const handlePointerDown = useCallback(
@@ -158,9 +201,12 @@ function App() {
       if (!point) return
       isDrawingRef.current = true
       lastPointRef.current = point
+      if (strokeType === 'heart') {
+        drawStroke(point, point)
+      }
       event.currentTarget.setPointerCapture(event.pointerId)
     },
-    [getCanvasPoint, hasImage],
+    [drawStroke, getCanvasPoint, hasImage, strokeType],
   )
 
   const handlePointerMove = useCallback(
@@ -278,7 +324,7 @@ function App() {
 
       <section className="workspace">
         <div className="workspace__canvas">
-          <div className="canvas-stack">
+          <div className={`canvas-stack${hasImage ? ' canvas-stack--ready' : ''}`} style={canvasStackStyle}>
             <canvas ref={baseCanvasRef} className="canvas" />
             <canvas
               ref={drawCanvasRef}
@@ -306,6 +352,29 @@ function App() {
               />
               <strong>{brushSize}px</strong>
             </label>
+            <fieldset className="tool-picker">
+              <legend>線の種類</legend>
+              <label>
+                <input
+                  type="radio"
+                  name="strokeType"
+                  value="line"
+                  checked={strokeType === 'line'}
+                  onChange={() => setStrokeType('line')}
+                />
+                <span>線</span>
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="strokeType"
+                  value="heart"
+                  checked={strokeType === 'heart'}
+                  onChange={() => setStrokeType('heart')}
+                />
+                <span>ハート</span>
+              </label>
+            </fieldset>
             <button type="button" onClick={applyHologramPattern} disabled={!hasImage || isGenerating}>
               ホログラムを線に反映
             </button>
