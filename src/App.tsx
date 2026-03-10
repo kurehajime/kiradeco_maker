@@ -40,6 +40,7 @@ function App() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [undoCount, setUndoCount] = useState(0)
   const [editorMode, setEditorMode] = useState<EditorMode>('pen')
   const [penSize, setPenSize] = useState(20)
   const [stampSize, setStampSize] = useState(44)
@@ -51,6 +52,7 @@ function App() {
   const drawCanvasRef = useRef<HTMLCanvasElement | null>(null)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const heartImageRef = useRef<HTMLImageElement | null>(null)
+  const undoStackRef = useRef<ImageData[]>([])
   const isDrawingRef = useRef(false)
   const lastPointRef = useRef<{ x: number; y: number } | null>(null)
   const hologramCacheRef = useRef<{
@@ -138,6 +140,38 @@ function App() {
     setCanvasSize({ width, height })
   }, [])
 
+  const clearUndoHistory = useCallback(() => {
+    undoStackRef.current = []
+    setUndoCount(0)
+  }, [])
+
+  const pushUndoSnapshot = useCallback(() => {
+    const drawCanvas = drawCanvasRef.current
+    if (!drawCanvas) return
+    const context = drawCanvas.getContext('2d')
+    if (!context) return
+    const snapshot = context.getImageData(0, 0, drawCanvas.width, drawCanvas.height)
+    const nextStack = [...undoStackRef.current, snapshot]
+    if (nextStack.length > 3) {
+      nextStack.shift()
+    }
+    undoStackRef.current = nextStack
+    setUndoCount(nextStack.length)
+  }, [])
+
+  const handleUndo = useCallback(() => {
+    const drawCanvas = drawCanvasRef.current
+    if (!drawCanvas) return
+    const context = drawCanvas.getContext('2d')
+    if (!context) return
+    const previous = undoStackRef.current.at(-1)
+    if (!previous) return
+    context.putImageData(previous, 0, 0)
+    undoStackRef.current = undoStackRef.current.slice(0, -1)
+    setUndoCount(undoStackRef.current.length)
+    revokePreviewUrl(null)
+  }, [revokePreviewUrl])
+
   const handleFileChange = useCallback(
     async (event: ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0]
@@ -148,6 +182,7 @@ function App() {
       try {
         const image = await loadImage(file)
         resetCanvases(image.width, image.height)
+        clearUndoHistory()
         const baseCanvas = baseCanvasRef.current
         const baseContext = baseCanvas?.getContext('2d')
         if (!baseContext) {
@@ -161,7 +196,7 @@ function App() {
         setCanvasSize(null)
       }
     },
-    [loadImage, resetCanvases, revokePreviewUrl],
+    [clearUndoHistory, loadImage, resetCanvases, revokePreviewUrl],
   )
 
   const openFilePicker = useCallback(() => {
@@ -357,10 +392,12 @@ function App() {
       const point = getCanvasPoint(event)
       if (!point) return
       if (editorMode === 'stamp') {
+        pushUndoSnapshot()
         stampAtPoint(point)
         return
       }
       if (editorMode !== 'pen') return
+      pushUndoSnapshot()
       isDrawingRef.current = true
       lastPointRef.current = point
       if (penType !== 'plain') {
@@ -368,7 +405,7 @@ function App() {
       }
       event.currentTarget.setPointerCapture(event.pointerId)
     },
-    [drawDecorativePenStroke, editorMode, getCanvasPoint, hasImage, penType, stampAtPoint],
+    [drawDecorativePenStroke, editorMode, getCanvasPoint, hasImage, penType, pushUndoSnapshot, stampAtPoint],
   )
 
   const handlePointerMove = useCallback(
@@ -399,9 +436,10 @@ function App() {
     if (!drawCanvas) return
     const context = drawCanvas.getContext('2d')
     if (!context) return
+    pushUndoSnapshot()
     context.clearRect(0, 0, drawCanvas.width, drawCanvas.height)
     revokePreviewUrl(null)
-  }, [revokePreviewUrl])
+  }, [pushUndoSnapshot, revokePreviewUrl])
 
   const buildGainmap = useCallback(() => {
     const drawCanvas = drawCanvasRef.current
@@ -460,6 +498,7 @@ function App() {
       if (!hasImage) return
       try {
         if (nextEffect === 'hologram') {
+          pushUndoSnapshot()
           await applyHologramPattern()
         }
       } catch (effectError) {
@@ -470,7 +509,7 @@ function App() {
         )
       }
     },
-    [applyHologramPattern, hasImage],
+    [applyHologramPattern, hasImage, pushUndoSnapshot],
   )
 
   const handleGenerate = useCallback(async () => {
@@ -594,6 +633,14 @@ function App() {
               aria-hidden="true"
             />
             <span className="mode-button__label">クリア</span>
+          </button>
+          <button
+            type="button"
+            className="mode-button mode-button--action"
+            onClick={handleUndo}
+            disabled={!hasImage || undoCount === 0}
+          >
+            <span className="mode-button__label">Undo</span>
           </button>
           <button
             type="button"
