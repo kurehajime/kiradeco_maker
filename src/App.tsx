@@ -2,12 +2,12 @@ import type { ChangeEvent, CSSProperties } from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
 import hologramUrl from './assets/kira.png'
+import { AppHeader } from './components/AppHeader'
+import { ControlBoard } from './components/ControlBoard'
+import { ImageCanvas } from './components/ImageCanvas'
+import { PreviewModal } from './components/PreviewModal'
+import type { EditorMode, EffectType, PenType, StampType } from './editorTypes'
 import { encodeUltraHDR } from './ultrahdr'
-
-type EditorMode = 'pen' | 'stamp' | 'effect'
-type PenType = 'plain' | 'heart' | 'star'
-type StampType = 'heart' | 'star'
-type EffectType = 'hologram'
 
 const DRAW_LAYER_PREVIEW_OPACITY = 0.7
 
@@ -564,278 +564,42 @@ function App() {
         onChange={handleFileChange}
       />
 
-      <header className="app__header">
-        <div className="app__title">
-          <span className="app__title-icon" aria-hidden="true" />
-          <h1>キラデコメーカー</h1>
-        </div>
-      </header>
-
-      <section className="image-area">
-        <div className={`canvas-stack${hasImage ? ' canvas-stack--ready' : ''}`} style={canvasStackStyle}>
-          <canvas ref={baseCanvasRef} className="canvas" />
-          <canvas
-            ref={drawCanvasRef}
-            className="canvas canvas--draw"
-            style={{ opacity: DRAW_LAYER_PREVIEW_OPACITY }}
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-            onPointerLeave={handlePointerUp}
-          />
-          {!hasImage && (
-            <button type="button" className="canvas-upload" onClick={openFilePicker}>
-              <span className="canvas-upload__icon" aria-hidden="true">
-                <span className="canvas-upload__plus">+</span>
-              </span>
-              <span className="canvas-upload__label">画像をえらぶ</span>
-            </button>
-          )}
-        </div>
-      </section>
-
-      <section className="control-board">
-        <div className="control-panel control-panel--mode">
-          <button type="button" className="mode-button mode-button--action" onClick={openFilePicker}>
-            <img
-              className="mode-button__icon"
-              src={`${import.meta.env.BASE_URL}image.svg`}
-              alt=""
-              aria-hidden="true"
-            />
-            <span className="mode-button__label">読込</span>
-          </button>
-          <button
-            type="button"
-            className={`mode-button${editorMode === 'pen' ? ' mode-button--active' : ''}`}
-            onClick={() => {
-              handleModeSelect('pen')
-            }}
-          >
-            <img className="mode-button__icon" src={`${import.meta.env.BASE_URL}pen.svg`} alt="" aria-hidden="true" />
-            <span className="mode-button__label">ペン</span>
-          </button>
-          <button
-            type="button"
-            className={`mode-button${editorMode === 'stamp' ? ' mode-button--active' : ''}`}
-            onClick={() => {
-              handleModeSelect('stamp')
-            }}
-          >
-            <img className="mode-button__icon" src={`${import.meta.env.BASE_URL}stamp.svg`} alt="" aria-hidden="true" />
-            <span className="mode-button__label">判子</span>
-          </button>
-          <button
-            type="button"
-            className={`mode-button${editorMode === 'effect' ? ' mode-button--active' : ''}`}
-            onClick={() => {
-              handleModeSelect('effect')
-            }}
-            disabled={!hasImage}
-          >
-            <img className="mode-button__icon" src={`${import.meta.env.BASE_URL}effect.svg`} alt="" aria-hidden="true" />
-            <span className="mode-button__label">効果</span>
-          </button>
-          <button
-            type="button"
-            className="mode-button mode-button--action"
-            onClick={handleUndo}
-            disabled={!hasImage || undoCount === 0}
-          >
-            <img
-              className="mode-button__icon"
-              src={`${import.meta.env.BASE_URL}undo.svg`}
-              alt=""
-              aria-hidden="true"
-            />
-            <span className="mode-button__label">戻す</span>
-          </button>
-          <button
-            type="button"
-            className="mode-button mode-button--action mode-button--primary"
-            onClick={handleGenerate}
-            disabled={!hasImage || isGenerating}
-          >
-            <img
-              className="mode-button__icon"
-              src={`${import.meta.env.BASE_URL}generate.svg`}
-              alt=""
-              aria-hidden="true"
-            />
-            <span className="mode-button__label">
-              {isGenerating ? '作成中' : '作成'}
-            </span>
-          </button>
-        </div>
-
-        <div className="control-panel control-panel--detail">
-          {editorMode === 'pen' && (
-            <>
-              <label className="control-range">
-                <span>線の太さ</span>
-                <input
-                  type="range"
-                  min={sizeBounds.min}
-                  max={sizeBounds.max}
-                  value={penSize}
-                  onChange={(event) => setPenSize(Number(event.target.value))}
-                />
-                <strong>{penSize}px</strong>
-              </label>
-              <fieldset className="choice-group">
-                <legend>ペンの種類</legend>
-                <label
-                  className={
-                    penType === 'plain'
-                      ? 'choice-group__option choice-group__option--active'
-                      : 'choice-group__option'
-                  }
-                >
-                  <input
-                    type="radio"
-                    name="penType"
-                    value="plain"
-                    checked={penType === 'plain'}
-                    onChange={() => setPenType('plain')}
-                  />
-                  <span>線</span>
-                </label>
-                <label
-                  className={
-                    penType === 'heart'
-                      ? 'choice-group__option choice-group__option--active'
-                      : 'choice-group__option'
-                  }
-                >
-                  <input
-                    type="radio"
-                    name="penType"
-                    value="heart"
-                    checked={penType === 'heart'}
-                    onChange={() => setPenType('heart')}
-                  />
-                  <span>ハート</span>
-                </label>
-                <label
-                  className={
-                    penType === 'star'
-                      ? 'choice-group__option choice-group__option--active'
-                      : 'choice-group__option'
-                  }
-                >
-                  <input
-                    type="radio"
-                    name="penType"
-                    value="star"
-                    checked={penType === 'star'}
-                    onChange={() => setPenType('star')}
-                  />
-                  <span>スター</span>
-                </label>
-              </fieldset>
-            </>
-          )}
-
-          {editorMode === 'stamp' && (
-            <>
-              <label className="control-range">
-                <span>スタンプの大きさ</span>
-                <input
-                  type="range"
-                  min={sizeBounds.min}
-                  max={sizeBounds.max}
-                  value={stampSize}
-                  onChange={(event) => setStampSize(Number(event.target.value))}
-                />
-                <strong>{stampSize}px</strong>
-              </label>
-              <fieldset className="choice-group">
-                <legend>スタンプの種類</legend>
-                <label
-                  className={
-                    stampType === 'heart'
-                      ? 'choice-group__option choice-group__option--active'
-                      : 'choice-group__option'
-                  }
-                >
-                  <input
-                    type="radio"
-                    name="stampType"
-                    value="heart"
-                    checked={stampType === 'heart'}
-                    onChange={() => setStampType('heart')}
-                  />
-                  <span>ハート</span>
-                </label>
-                <label
-                  className={
-                    stampType === 'star'
-                      ? 'choice-group__option choice-group__option--active'
-                      : 'choice-group__option'
-                  }
-                >
-                  <input
-                    type="radio"
-                    name="stampType"
-                    value="star"
-                    checked={stampType === 'star'}
-                    onChange={() => setStampType('star')}
-                  />
-                  <span>スター</span>
-                </label>
-              </fieldset>
-            </>
-          )}
-
-          {editorMode === 'effect' && (
-            <fieldset className="choice-group">
-              <legend>エフェクト</legend>
-              <button
-                type="button"
-                className={
-                  effectType === 'hologram'
-                    ? 'choice-group__action choice-group__action--active'
-                    : 'choice-group__action'
-                }
-                onClick={() => {
-                  void handleEffectSelect('hologram')
-                }}
-                disabled={!hasImage}
-              >
-                <img
-                  className="choice-group__icon"
-                  src={`${import.meta.env.BASE_URL}kira.svg`}
-                  alt=""
-                  aria-hidden="true"
-                />
-                <span>ホログラム</span>
-              </button>
-            </fieldset>
-          )}
-        </div>
-      </section>
+      <AppHeader />
+      <ImageCanvas
+        baseCanvasRef={baseCanvasRef}
+        canvasStackStyle={canvasStackStyle}
+        drawCanvasRef={drawCanvasRef}
+        hasImage={hasImage}
+        onOpenFilePicker={openFilePicker}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        previewOpacity={DRAW_LAYER_PREVIEW_OPACITY}
+      />
+      <ControlBoard
+        editorMode={editorMode}
+        effectType={effectType}
+        hasImage={hasImage}
+        isGenerating={isGenerating}
+        onEffectSelect={handleEffectSelect}
+        onGenerate={handleGenerate}
+        onModeSelect={handleModeSelect}
+        onOpenFilePicker={openFilePicker}
+        onUndo={handleUndo}
+        penSize={penSize}
+        penType={penType}
+        setPenSize={setPenSize}
+        setPenType={setPenType}
+        setStampSize={setStampSize}
+        setStampType={setStampType}
+        sizeBounds={sizeBounds}
+        stampSize={stampSize}
+        stampType={stampType}
+        undoCount={undoCount}
+      />
 
       {error && <p className="error">{error}</p>}
-
-      {previewUrl && (
-        <div
-          className="preview-modal"
-          role="dialog"
-          aria-modal="true"
-          aria-label="生成プレビュー"
-          onClick={() => revokePreviewUrl(null)}
-        >
-          <div className="preview-modal__panel" onClick={(event) => event.stopPropagation()}>
-            <div className="preview-modal__header">
-              <h2>できあがりプレビュー</h2>
-              <button type="button" className="subtle-button" onClick={() => revokePreviewUrl(null)}>
-                とじる
-              </button>
-            </div>
-            <img className="preview-modal__image" src={previewUrl} alt="生成された画像のプレビュー" />
-          </div>
-        </div>
-      )}
+      <PreviewModal previewUrl={previewUrl} onClose={() => revokePreviewUrl(null)} />
     </div>
   )
 }
