@@ -4,9 +4,9 @@ import './App.css'
 import hologramUrl from './assets/kira.png'
 import { encodeUltraHDR } from './ultrahdr'
 
-type EditorMode = 'pen' | 'stamp' | 'hologram'
-type PenType = 'plain' | 'marker'
-type StampType = 'heart' | 'star'
+type EditorMode = 'pen' | 'stamp' | 'effect'
+type PenType = 'plain' | 'heart' | 'star'
+type EffectType = 'hologram'
 
 const DRAW_LAYER_PREVIEW_OPACITY = 0.7
 
@@ -41,9 +41,8 @@ function App() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [editorMode, setEditorMode] = useState<EditorMode>('pen')
   const [penSize, setPenSize] = useState(20)
-  const [stampSize, setStampSize] = useState(44)
   const [penType, setPenType] = useState<PenType>('plain')
-  const [stampType, setStampType] = useState<StampType>('heart')
+  const [effectType, setEffectType] = useState<EffectType>('hologram')
   const [canvasSize, setCanvasSize] = useState<{ width: number; height: number } | null>(null)
   const baseCanvasRef = useRef<HTMLCanvasElement | null>(null)
   const drawCanvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -196,9 +195,8 @@ function App() {
       const drawCanvas = drawCanvasRef.current
       const context = drawCanvas?.getContext('2d')
       if (!context) return
-      context.strokeStyle =
-        penType === 'marker' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(255, 255, 255, 0.96)'
-      context.lineWidth = penType === 'marker' ? penSize * 1.2 : penSize
+      context.strokeStyle = 'rgba(255, 255, 255, 0.96)'
+      context.lineWidth = penSize
       context.lineCap = 'round'
       context.lineJoin = 'round'
       context.beginPath()
@@ -209,7 +207,7 @@ function App() {
     [penSize, penType],
   )
 
-  const drawHeartStampStroke = useCallback(
+  const drawHeartPenStroke = useCallback(
     (from: { x: number; y: number }, to: { x: number; y: number }) => {
       const drawCanvas = drawCanvasRef.current
       const context = drawCanvas?.getContext('2d')
@@ -217,11 +215,11 @@ function App() {
       if (!context || !heartImage?.complete || heartImage.naturalWidth === 0 || heartImage.naturalHeight === 0) {
         return
       }
-      const spacing = Math.max(4, stampSize * 0.36)
+      const spacing = Math.max(4, penSize * 0.36)
       const distance = Math.hypot(to.x - from.x, to.y - from.y)
       const steps = Math.max(1, Math.ceil(distance / spacing))
-      const particleCount = Math.min(5, Math.max(2, Math.round(stampSize / 20)))
-      const spread = stampSize * 0.65
+      const particleCount = Math.min(5, Math.max(2, Math.round(penSize / 20)))
+      const spread = penSize * 0.65
       const aspect = heartImage.naturalHeight / heartImage.naturalWidth
       context.save()
       for (let step = 0; step <= steps; step += 1) {
@@ -234,7 +232,7 @@ function App() {
           const px = x + Math.cos(angle) * distanceScale
           const py = y + Math.sin(angle) * distanceScale
           const sizeScale = 0.18 + Math.random() * 0.82
-          const drawWidth = stampSize * sizeScale
+          const drawWidth = penSize * sizeScale
           const drawHeight = drawWidth * aspect
           context.globalAlpha = 0.35 + Math.random() * 0.55
           context.drawImage(
@@ -248,19 +246,19 @@ function App() {
       }
       context.restore()
     },
-    [stampSize],
+    [penSize],
   )
 
-  const drawStarStampStroke = useCallback(
+  const drawStarPenStroke = useCallback(
     (from: { x: number; y: number }, to: { x: number; y: number }) => {
       const drawCanvas = drawCanvasRef.current
       const context = drawCanvas?.getContext('2d')
       if (!context) return
-      const spacing = Math.max(6, stampSize * 0.42)
+      const spacing = Math.max(6, penSize * 0.42)
       const distance = Math.hypot(to.x - from.x, to.y - from.y)
       const steps = Math.max(1, Math.ceil(distance / spacing))
-      const particleCount = Math.min(4, Math.max(1, Math.round(stampSize / 24)))
-      const spread = stampSize * 0.48
+      const particleCount = Math.min(4, Math.max(1, Math.round(penSize / 24)))
+      const spread = penSize * 0.48
       context.save()
       context.fillStyle = 'rgba(255, 255, 255, 0.94)'
       for (let step = 0; step <= steps; step += 1) {
@@ -273,7 +271,7 @@ function App() {
           const px = x + Math.cos(angle) * distanceScale
           const py = y + Math.sin(angle) * distanceScale
           const sizeScale = 0.22 + Math.random() * 0.68
-          const outerRadius = (stampSize * sizeScale) / 2
+          const outerRadius = (penSize * sizeScale) / 2
           context.globalAlpha = 0.35 + Math.random() * 0.55
           drawStar(
             context,
@@ -287,33 +285,33 @@ function App() {
       }
       context.restore()
     },
-    [stampSize],
+    [penSize],
   )
 
-  const drawStampStroke = useCallback(
+  const drawDecorativePenStroke = useCallback(
     (from: { x: number; y: number }, to: { x: number; y: number }) => {
-      if (stampType === 'heart') {
-        drawHeartStampStroke(from, to)
+      if (penType === 'heart') {
+        drawHeartPenStroke(from, to)
         return
       }
-      drawStarStampStroke(from, to)
+      drawStarPenStroke(from, to)
     },
-    [drawHeartStampStroke, drawStarStampStroke, stampType],
+    [drawHeartPenStroke, drawStarPenStroke, penType],
   )
 
   const handlePointerDown = useCallback(
     (event: React.PointerEvent<HTMLCanvasElement>) => {
-      if (!hasImage || editorMode === 'hologram') return
+      if (!hasImage || editorMode !== 'pen') return
       const point = getCanvasPoint(event)
       if (!point) return
       isDrawingRef.current = true
       lastPointRef.current = point
-      if (editorMode === 'stamp') {
-        drawStampStroke(point, point)
+      if (penType !== 'plain') {
+        drawDecorativePenStroke(point, point)
       }
       event.currentTarget.setPointerCapture(event.pointerId)
     },
-    [drawStampStroke, editorMode, getCanvasPoint, hasImage],
+    [drawDecorativePenStroke, editorMode, getCanvasPoint, hasImage, penType],
   )
 
   const handlePointerMove = useCallback(
@@ -322,14 +320,14 @@ function App() {
       const point = getCanvasPoint(event)
       const lastPoint = lastPointRef.current
       if (!point || !lastPoint) return
-      if (editorMode === 'pen') {
+      if (editorMode === 'pen' && penType === 'plain') {
         drawPenStroke(lastPoint, point)
-      } else if (editorMode === 'stamp') {
-        drawStampStroke(lastPoint, point)
+      } else if (editorMode === 'pen') {
+        drawDecorativePenStroke(lastPoint, point)
       }
       lastPointRef.current = point
     },
-    [drawPenStroke, drawStampStroke, editorMode, getCanvasPoint],
+    [drawDecorativePenStroke, drawPenStroke, editorMode, getCanvasPoint, penType],
   )
 
   const handlePointerUp = useCallback((event: React.PointerEvent<HTMLCanvasElement>) => {
@@ -393,18 +391,25 @@ function App() {
     revokePreviewUrl(null)
   }, [loadHologramPattern, revokePreviewUrl])
 
-  const handleModeSelect = useCallback(
-    async (nextMode: EditorMode) => {
-      setEditorMode(nextMode)
+  const handleModeSelect = useCallback((nextMode: EditorMode) => {
+    setEditorMode(nextMode)
+    setError(null)
+  }, [])
+
+  const handleEffectSelect = useCallback(
+    async (nextEffect: EffectType) => {
+      setEffectType(nextEffect)
       setError(null)
-      if (nextMode !== 'hologram' || !hasImage) return
+      if (!hasImage) return
       try {
-        await applyHologramPattern()
-      } catch (hologramError) {
+        if (nextEffect === 'hologram') {
+          await applyHologramPattern()
+        }
+      } catch (effectError) {
         setError(
-          hologramError instanceof Error
-            ? hologramError.message
-            : 'ホログラムの反映に失敗しました。',
+          effectError instanceof Error
+            ? effectError.message
+            : 'エフェクトの反映に失敗しました。',
         )
       }
     },
@@ -474,62 +479,82 @@ function App() {
         </div>
         <div className="image-area__meta">
           <p className="image-area__name">{imageName ?? '画像はまだ読み込まれていません'}</p>
-          {hasImage && (
-            <button type="button" className="subtle-button" onClick={handleClear}>
-              クリア
-            </button>
-          )}
         </div>
       </section>
 
       <section className="control-board">
-        <button type="button" className="side-action side-action--left" onClick={openFilePicker}>
-          <span className="side-action__kana">画像</span>
-          <span className="side-action__label">よみこみ</span>
-        </button>
-
         <div className="control-panel control-panel--mode">
+          <button type="button" className="mode-button mode-button--action" onClick={openFilePicker}>
+            <img
+              className="mode-button__icon"
+              src={`${import.meta.env.BASE_URL}image.svg`}
+              alt=""
+              aria-hidden="true"
+            />
+            <span className="mode-button__label">よみこみ</span>
+          </button>
           <button
             type="button"
             className={`mode-button${editorMode === 'pen' ? ' mode-button--active' : ''}`}
             onClick={() => {
-              void handleModeSelect('pen')
+              handleModeSelect('pen')
             }}
           >
-            ペン
+            <img className="mode-button__icon" src={`${import.meta.env.BASE_URL}pen.svg`} alt="" aria-hidden="true" />
+            <span className="mode-button__label">ペン</span>
           </button>
           <button
             type="button"
             className={`mode-button${editorMode === 'stamp' ? ' mode-button--active' : ''}`}
             onClick={() => {
-              void handleModeSelect('stamp')
+              handleModeSelect('stamp')
             }}
           >
-            スタンプ
+            <img className="mode-button__icon" src={`${import.meta.env.BASE_URL}stamp.svg`} alt="" aria-hidden="true" />
+            <span className="mode-button__label">スタンプ</span>
           </button>
           <button
             type="button"
-            className={`mode-button${editorMode === 'hologram' ? ' mode-button--active' : ''}`}
+            className={`mode-button${editorMode === 'effect' ? ' mode-button--active' : ''}`}
             onClick={() => {
-              void handleModeSelect('hologram')
+              handleModeSelect('effect')
             }}
             disabled={!hasImage}
           >
-            ホログラム
+            <img className="mode-button__icon" src={`${import.meta.env.BASE_URL}effect.svg`} alt="" aria-hidden="true" />
+            <span className="mode-button__label">エフェクト</span>
+          </button>
+          <button
+            type="button"
+            className="mode-button mode-button--action"
+            onClick={handleClear}
+            disabled={!hasImage}
+          >
+            <img
+              className="mode-button__icon"
+              src={`${import.meta.env.BASE_URL}clear.svg`}
+              alt=""
+              aria-hidden="true"
+            />
+            <span className="mode-button__label">クリア</span>
+          </button>
+          <button
+            type="button"
+            className="mode-button mode-button--action mode-button--primary"
+            onClick={handleGenerate}
+            disabled={!hasImage || isGenerating}
+          >
+            <img
+              className="mode-button__icon"
+              src={`${import.meta.env.BASE_URL}generate.svg`}
+              alt=""
+              aria-hidden="true"
+            />
+            <span className="mode-button__label">
+              {isGenerating ? 'さくせい中' : 'さくせい'}
+            </span>
           </button>
         </div>
-
-        <button
-          type="button"
-          className="side-action side-action--right side-action--primary"
-          onClick={handleGenerate}
-          disabled={!hasImage || isGenerating}
-        >
-          <span className="side-action__kana">画像</span>
-          <span className="side-action__label">
-            {isGenerating ? 'さくせい中' : 'さくせい'}
-          </span>
-        </button>
 
         <div className="control-panel control-panel--detail">
           {editorMode === 'pen' && (
@@ -547,7 +572,13 @@ function App() {
               </label>
               <fieldset className="choice-group">
                 <legend>ペンの種類</legend>
-                <label className={penType === 'plain' ? 'choice-group__option choice-group__option--active' : 'choice-group__option'}>
+                <label
+                  className={
+                    penType === 'plain'
+                      ? 'choice-group__option choice-group__option--active'
+                      : 'choice-group__option'
+                  }
+                >
                   <input
                     type="radio"
                     name="penType"
@@ -555,54 +586,37 @@ function App() {
                     checked={penType === 'plain'}
                     onChange={() => setPenType('plain')}
                   />
-                  <span>ノーマル</span>
+                  <span>線</span>
                 </label>
-                <label className={penType === 'marker' ? 'choice-group__option choice-group__option--active' : 'choice-group__option'}>
+                <label
+                  className={
+                    penType === 'heart'
+                      ? 'choice-group__option choice-group__option--active'
+                      : 'choice-group__option'
+                  }
+                >
                   <input
                     type="radio"
                     name="penType"
-                    value="marker"
-                    checked={penType === 'marker'}
-                    onChange={() => setPenType('marker')}
-                  />
-                  <span>マーカー</span>
-                </label>
-              </fieldset>
-            </>
-          )}
-
-          {editorMode === 'stamp' && (
-            <>
-              <label className="control-range">
-                <span>スタンプの大きさ</span>
-                <input
-                  type="range"
-                  min={12}
-                  max={150}
-                  value={stampSize}
-                  onChange={(event) => setStampSize(Number(event.target.value))}
-                />
-                <strong>{stampSize}px</strong>
-              </label>
-              <fieldset className="choice-group">
-                <legend>スタンプの種類</legend>
-                <label className={stampType === 'heart' ? 'choice-group__option choice-group__option--active' : 'choice-group__option'}>
-                  <input
-                    type="radio"
-                    name="stampType"
                     value="heart"
-                    checked={stampType === 'heart'}
-                    onChange={() => setStampType('heart')}
+                    checked={penType === 'heart'}
+                    onChange={() => setPenType('heart')}
                   />
                   <span>ハート</span>
                 </label>
-                <label className={stampType === 'star' ? 'choice-group__option choice-group__option--active' : 'choice-group__option'}>
+                <label
+                  className={
+                    penType === 'star'
+                      ? 'choice-group__option choice-group__option--active'
+                      : 'choice-group__option'
+                  }
+                >
                   <input
                     type="radio"
-                    name="stampType"
+                    name="penType"
                     value="star"
-                    checked={stampType === 'star'}
-                    onChange={() => setStampType('star')}
+                    checked={penType === 'star'}
+                    onChange={() => setPenType('star')}
                   />
                   <span>スター</span>
                 </label>
@@ -610,11 +624,37 @@ function App() {
             </>
           )}
 
-          {editorMode === 'hologram' && (
+          {editorMode === 'stamp' && (
             <div className="control-empty">
-              <p>追加設定はありません</p>
-              <small>上のボタンを押したタイミングでホログラムを反映します。</small>
+              <p>スタンプは準備中</p>
+              <small>あとで追加します。</small>
             </div>
+          )}
+
+          {editorMode === 'effect' && (
+            <fieldset className="choice-group">
+              <legend>エフェクト</legend>
+              <button
+                type="button"
+                className={
+                  effectType === 'hologram'
+                    ? 'choice-group__action choice-group__action--active'
+                    : 'choice-group__action'
+                }
+                onClick={() => {
+                  void handleEffectSelect('hologram')
+                }}
+                disabled={!hasImage}
+              >
+                <img
+                  className="choice-group__icon"
+                  src={`${import.meta.env.BASE_URL}kira.svg`}
+                  alt=""
+                  aria-hidden="true"
+                />
+                <span>ホログラム</span>
+              </button>
+            </fieldset>
           )}
         </div>
       </section>
