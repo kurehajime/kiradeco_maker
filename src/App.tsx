@@ -7,33 +7,12 @@ import { ControlBoard } from './components/ControlBoard'
 import { ImageCanvas } from './components/ImageCanvas'
 import { PreviewModal } from './components/PreviewModal'
 import type { EditorMode, EffectType, PenType, StampType } from './editorTypes'
+import { drawStar, popHistory, pushLimitedHistory } from './lib/canvas'
+import { getDefaultToolSizes, getSizeBounds } from './lib/editorSizing'
+import { loadImageSource } from './lib/image'
 import { encodeUltraHDR } from './ultrahdr'
 
 const DRAW_LAYER_PREVIEW_OPACITY = 0.7
-
-const drawStar = (
-  context: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  outerRadius: number,
-  innerRadius: number,
-  rotation: number,
-) => {
-  context.beginPath()
-  for (let point = 0; point < 10; point += 1) {
-    const radius = point % 2 === 0 ? outerRadius : innerRadius
-    const angle = rotation + (Math.PI / 5) * point - Math.PI / 2
-    const px = x + Math.cos(angle) * radius
-    const py = y + Math.sin(angle) * radius
-    if (point === 0) {
-      context.moveTo(px, py)
-    } else {
-      context.lineTo(px, py)
-    }
-  }
-  context.closePath()
-  context.fill()
-}
 
 function App() {
   const [imageName, setImageName] = useState<string | null>(null)
@@ -77,24 +56,13 @@ function App() {
 
   const loadImage = useCallback(async (file: File) => {
     const imageUrl = URL.createObjectURL(file)
-    const image = new Image()
-    await new Promise<void>((resolve, reject) => {
-      image.onload = () => resolve()
-      image.onerror = () => reject(new Error('画像の読み込みに失敗しました。'))
-      image.src = imageUrl
-    })
+    const image = await loadImageSource(imageUrl, '画像の読み込みに失敗しました。')
     URL.revokeObjectURL(imageUrl)
     return image
   }, [])
 
   const loadImageFromUrl = useCallback(async (url: string) => {
-    const image = new Image()
-    await new Promise<void>((resolve, reject) => {
-      image.onload = () => resolve()
-      image.onerror = () => reject(new Error('ホログラム画像の読み込みに失敗しました。'))
-      image.src = url
-    })
-    return image
+    return loadImageSource(url, 'ホログラム画像の読み込みに失敗しました。')
   }, [])
 
   const loadHologramPattern = useCallback(
@@ -151,10 +119,7 @@ function App() {
     const context = drawCanvas.getContext('2d')
     if (!context) return
     const snapshot = context.getImageData(0, 0, drawCanvas.width, drawCanvas.height)
-    const nextStack = [...undoStackRef.current, snapshot]
-    if (nextStack.length > 3) {
-      nextStack.shift()
-    }
+    const nextStack = pushLimitedHistory(undoStackRef.current, snapshot, 3)
     undoStackRef.current = nextStack
     setUndoCount(nextStack.length)
   }, [])
@@ -164,11 +129,11 @@ function App() {
     if (!drawCanvas) return
     const context = drawCanvas.getContext('2d')
     if (!context) return
-    const previous = undoStackRef.current.at(-1)
-    if (!previous) return
-    context.putImageData(previous, 0, 0)
-    undoStackRef.current = undoStackRef.current.slice(0, -1)
-    setUndoCount(undoStackRef.current.length)
+    const { nextHistory, snapshot } = popHistory(undoStackRef.current)
+    if (!snapshot) return
+    context.putImageData(snapshot, 0, 0)
+    undoStackRef.current = nextHistory
+    setUndoCount(nextHistory.length)
     revokePreviewUrl(null)
   }, [revokePreviewUrl])
 
@@ -211,29 +176,14 @@ function App() {
   }, [canvasSize])
 
   const sizeBounds = useMemo(() => {
-    if (!canvasSize) {
-      return {
-        min: 4,
-        max: 150,
-      }
-    }
-    const min = Math.max(1, Math.round(canvasSize.width / 200))
-    const max = Math.max(min, Math.round(canvasSize.width / 2))
-    return { min, max }
+    return getSizeBounds(canvasSize)
   }, [canvasSize])
 
   useEffect(() => {
     if (!canvasSize) return
-    const defaultPenSize = Math.min(
-      sizeBounds.max,
-      Math.max(sizeBounds.min, Math.round(canvasSize.width / 40)),
-    )
-    const defaultStampSize = Math.min(
-      sizeBounds.max,
-      Math.max(sizeBounds.min, Math.round(canvasSize.width / 10)),
-    )
-    setPenSize(defaultPenSize)
-    setStampSize(defaultStampSize)
+    const defaultToolSizes = getDefaultToolSizes(canvasSize.width, sizeBounds)
+    setPenSize(defaultToolSizes.pen)
+    setStampSize(defaultToolSizes.stamp)
   }, [canvasSize, sizeBounds])
 
   const getCanvasPoint = useCallback((event: React.PointerEvent<HTMLCanvasElement>) => {

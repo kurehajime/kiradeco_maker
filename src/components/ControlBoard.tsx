@@ -1,10 +1,6 @@
 import type { Dispatch, SetStateAction } from 'react'
 import type { EditorMode, EffectType, PenType, StampType } from '../editorTypes'
-
-type SizeBounds = {
-  min: number
-  max: number
-}
+import type { SizeBounds } from '../lib/editorSizing'
 
 type ControlBoardProps = {
   editorMode: EditorMode
