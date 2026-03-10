@@ -93,7 +93,6 @@ export function ControlBoard({
           onClick={() => {
             onModeSelect('effect')
           }}
-          disabled={!hasImage}
         >
           <img
             className="mode-button__icon"
