@@ -6,6 +6,7 @@ import { encodeUltraHDR } from './ultrahdr'
 
 type EditorMode = 'pen' | 'stamp' | 'effect'
 type PenType = 'plain' | 'heart' | 'star'
+type StampType = 'heart' | 'star'
 type EffectType = 'hologram'
 
 const DRAW_LAYER_PREVIEW_OPACITY = 0.7
@@ -41,7 +42,9 @@ function App() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [editorMode, setEditorMode] = useState<EditorMode>('pen')
   const [penSize, setPenSize] = useState(20)
+  const [stampSize, setStampSize] = useState(44)
   const [penType, setPenType] = useState<PenType>('plain')
+  const [stampType, setStampType] = useState<StampType>('heart')
   const [effectType, setEffectType] = useState<EffectType>('hologram')
   const [canvasSize, setCanvasSize] = useState<{ width: number; height: number } | null>(null)
   const baseCanvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -204,7 +207,7 @@ function App() {
       context.lineTo(to.x, to.y)
       context.stroke()
     },
-    [penSize, penType],
+    [penSize],
   )
 
   const drawHeartPenStroke = useCallback(
@@ -299,11 +302,65 @@ function App() {
     [drawHeartPenStroke, drawStarPenStroke, penType],
   )
 
+  const stampHeartAtPoint = useCallback(
+    (point: { x: number; y: number }) => {
+      const drawCanvas = drawCanvasRef.current
+      const context = drawCanvas?.getContext('2d')
+      const heartImage = heartImageRef.current
+      if (!context || !heartImage?.complete || heartImage.naturalWidth === 0 || heartImage.naturalHeight === 0) {
+        return
+      }
+      const aspect = heartImage.naturalHeight / heartImage.naturalWidth
+      const drawWidth = stampSize
+      const drawHeight = drawWidth * aspect
+      context.save()
+      context.globalAlpha = 0.96
+      context.drawImage(
+        heartImage,
+        point.x - drawWidth / 2,
+        point.y - drawHeight / 2,
+        drawWidth,
+        drawHeight,
+      )
+      context.restore()
+    },
+    [stampSize],
+  )
+
+  const stampStarAtPoint = useCallback(
+    (point: { x: number; y: number }) => {
+      const drawCanvas = drawCanvasRef.current
+      const context = drawCanvas?.getContext('2d')
+      if (!context) return
+      context.save()
+      context.fillStyle = 'rgba(255, 255, 255, 0.96)'
+      drawStar(context, point.x, point.y, stampSize / 2, stampSize * 0.22, 0)
+      context.restore()
+    },
+    [stampSize],
+  )
+
+  const stampAtPoint = useCallback(
+    (point: { x: number; y: number }) => {
+      if (stampType === 'heart') {
+        stampHeartAtPoint(point)
+        return
+      }
+      stampStarAtPoint(point)
+    },
+    [stampHeartAtPoint, stampStarAtPoint, stampType],
+  )
+
   const handlePointerDown = useCallback(
     (event: React.PointerEvent<HTMLCanvasElement>) => {
-      if (!hasImage || editorMode !== 'pen') return
+      if (!hasImage) return
       const point = getCanvasPoint(event)
       if (!point) return
+      if (editorMode === 'stamp') {
+        stampAtPoint(point)
+        return
+      }
+      if (editorMode !== 'pen') return
       isDrawingRef.current = true
       lastPointRef.current = point
       if (penType !== 'plain') {
@@ -311,7 +368,7 @@ function App() {
       }
       event.currentTarget.setPointerCapture(event.pointerId)
     },
-    [drawDecorativePenStroke, editorMode, getCanvasPoint, hasImage, penType],
+    [drawDecorativePenStroke, editorMode, getCanvasPoint, hasImage, penType, stampAtPoint],
   )
 
   const handlePointerMove = useCallback(
@@ -625,10 +682,54 @@ function App() {
           )}
 
           {editorMode === 'stamp' && (
-            <div className="control-empty">
-              <p>スタンプは準備中</p>
-              <small>あとで追加します。</small>
-            </div>
+            <>
+              <label className="control-range">
+                <span>スタンプの大きさ</span>
+                <input
+                  type="range"
+                  min={12}
+                  max={150}
+                  value={stampSize}
+                  onChange={(event) => setStampSize(Number(event.target.value))}
+                />
+                <strong>{stampSize}px</strong>
+              </label>
+              <fieldset className="choice-group">
+                <legend>スタンプの種類</legend>
+                <label
+                  className={
+                    stampType === 'heart'
+                      ? 'choice-group__option choice-group__option--active'
+                      : 'choice-group__option'
+                  }
+                >
+                  <input
+                    type="radio"
+                    name="stampType"
+                    value="heart"
+                    checked={stampType === 'heart'}
+                    onChange={() => setStampType('heart')}
+                  />
+                  <span>ハート</span>
+                </label>
+                <label
+                  className={
+                    stampType === 'star'
+                      ? 'choice-group__option choice-group__option--active'
+                      : 'choice-group__option'
+                  }
+                >
+                  <input
+                    type="radio"
+                    name="stampType"
+                    value="star"
+                    checked={stampType === 'star'}
+                    onChange={() => setStampType('star')}
+                  />
+                  <span>スター</span>
+                </label>
+              </fieldset>
+            </>
           )}
 
           {editorMode === 'effect' && (
