@@ -565,7 +565,10 @@ function App() {
       />
 
       <header className="app__header">
-        <h1>キラデコメーカー</h1>
+        <div className="app__title">
+          <span className="app__title-icon" aria-hidden="true" />
+          <h1>キラデコメーカー</h1>
+        </div>
       </header>
 
       <section className="image-area">
@@ -631,7 +634,7 @@ function App() {
             disabled={!hasImage}
           >
             <img className="mode-button__icon" src={`${import.meta.env.BASE_URL}effect.svg`} alt="" aria-hidden="true" />
-            <span className="mode-button__label">キラ</span>
+            <span className="mode-button__label">効果</span>
           </button>
           <button
             type="button"
