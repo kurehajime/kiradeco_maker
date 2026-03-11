@@ -57,7 +57,7 @@ export function PreviewModal({ previewUrl, onClose }: PreviewModalProps) {
           <button type="button" className="subtle-button" onClick={onClose}>
             とじる
           </button>
-          <h2>できあがりプレビュー</h2>
+          <h2>できあがり</h2>
           <button
             type="button"
             className="subtle-button subtle-button--share"

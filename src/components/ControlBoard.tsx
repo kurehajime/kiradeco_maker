@@ -57,51 +57,53 @@ export function ControlBoard({
           />
           <span className="mode-button__label">読込</span>
         </button>
-        <button
-          type="button"
-          className={`mode-button${editorMode === 'pen' ? ' mode-button--active' : ''}`}
-          onClick={() => {
-            onModeSelect('pen')
-          }}
-        >
-          <img
-            className="mode-button__icon"
-            src={`${import.meta.env.BASE_URL}pen.svg`}
-            alt=""
-            aria-hidden="true"
-          />
-          <span className="mode-button__label">ペン</span>
-        </button>
-        <button
-          type="button"
-          className={`mode-button${editorMode === 'stamp' ? ' mode-button--active' : ''}`}
-          onClick={() => {
-            onModeSelect('stamp')
-          }}
-        >
-          <img
-            className="mode-button__icon"
-            src={`${import.meta.env.BASE_URL}stamp.svg`}
-            alt=""
-            aria-hidden="true"
-          />
-          <span className="mode-button__label">判子</span>
-        </button>
-        <button
-          type="button"
-          className={`mode-button${editorMode === 'effect' ? ' mode-button--active' : ''}`}
-          onClick={() => {
-            onModeSelect('effect')
-          }}
-        >
-          <img
-            className="mode-button__icon"
-            src={`${import.meta.env.BASE_URL}effect.svg`}
-            alt=""
-            aria-hidden="true"
-          />
-          <span className="mode-button__label">効果</span>
-        </button>
+        <div className="mode-button-cluster" role="group" aria-label="編集モード">
+          <button
+            type="button"
+            className={`mode-button mode-button--joined mode-button--joined-start${editorMode === 'pen' ? ' mode-button--active' : ''}`}
+            onClick={() => {
+              onModeSelect('pen')
+            }}
+          >
+            <img
+              className="mode-button__icon"
+              src={`${import.meta.env.BASE_URL}pen.svg`}
+              alt=""
+              aria-hidden="true"
+            />
+            <span className="mode-button__label">ペン</span>
+          </button>
+          <button
+            type="button"
+            className={`mode-button mode-button--joined${editorMode === 'stamp' ? ' mode-button--active' : ''}`}
+            onClick={() => {
+              onModeSelect('stamp')
+            }}
+          >
+            <img
+              className="mode-button__icon"
+              src={`${import.meta.env.BASE_URL}stamp.svg`}
+              alt=""
+              aria-hidden="true"
+            />
+            <span className="mode-button__label">判子</span>
+          </button>
+          <button
+            type="button"
+            className={`mode-button mode-button--joined mode-button--joined-end${editorMode === 'effect' ? ' mode-button--active' : ''}`}
+            onClick={() => {
+              onModeSelect('effect')
+            }}
+          >
+            <img
+              className="mode-button__icon"
+              src={`${import.meta.env.BASE_URL}effect.svg`}
+              alt=""
+              aria-hidden="true"
+            />
+            <span className="mode-button__label">効果</span>
+          </button>
+        </div>
         <button
           type="button"
           className="mode-button mode-button--action"
