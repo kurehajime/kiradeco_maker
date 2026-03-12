@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 type PreviewModalProps = {
   previewUrl: string | null
@@ -7,6 +8,7 @@ type PreviewModalProps = {
 
 export function PreviewModal({ previewUrl, onClose }: PreviewModalProps) {
   const [isSharing, setIsSharing] = useState(false)
+  const { t } = useTranslation()
 
   const canShare = useMemo(
     () => typeof navigator !== 'undefined' && typeof navigator.share === 'function',
@@ -27,12 +29,12 @@ export function PreviewModal({ previewUrl, onClose }: PreviewModalProps) {
       if (navigator.canShare?.({ files: [file] })) {
         await navigator.share({
           files: [file],
-          title: 'キラデコメーカー',
+          title: t('app.title'),
         })
       } else {
         await navigator.share({
-          title: 'キラデコメーカー',
-          text: 'キラデコメーカーで作成した画像です。',
+          title: t('app.title'),
+          text: t('preview.shareText'),
         })
       }
     } catch (error) {
@@ -49,15 +51,15 @@ export function PreviewModal({ previewUrl, onClose }: PreviewModalProps) {
       className="preview-modal"
       role="dialog"
       aria-modal="true"
-      aria-label="生成プレビュー"
+      aria-label={t('preview.dialogAriaLabel')}
       onClick={onClose}
     >
       <div className="preview-modal__panel" onClick={(event) => event.stopPropagation()}>
         <div className="preview-modal__header">
           <button type="button" className="subtle-button" onClick={onClose}>
-            とじる
+            {t('preview.close')}
           </button>
-          <h2>できあがり</h2>
+          <h2>{t('preview.heading')}</h2>
           <button
             type="button"
             className="subtle-button subtle-button--share"
@@ -72,10 +74,10 @@ export function PreviewModal({ previewUrl, onClose }: PreviewModalProps) {
               alt=""
               aria-hidden="true"
             />
-            <span>{isSharing ? 'シェア中' : 'シェアする'}</span>
+            <span>{isSharing ? t('preview.sharing') : t('preview.share')}</span>
           </button>
         </div>
-        <img className="preview-modal__image" src={previewUrl} alt="生成された画像のプレビュー" />
+        <img className="preview-modal__image" src={previewUrl} alt={t('preview.imageAlt')} />
       </div>
     </div>
   )

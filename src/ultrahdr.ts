@@ -1,3 +1,5 @@
+import i18n from './i18n'
+
 type UltraHDRModule = () => Promise<{
   appendGainMap: (
     width: number,
@@ -25,10 +27,7 @@ const loadModule = async () => {
     const loaded = (await import(/* @vite-ignore */ moduleUrl)) as Record<string, unknown>
     return loaded
   } catch (error) {
-    throw new Error(
-      'UltraHDRモジュールの読み込みに失敗しました。`make ultrahdr`でビルドしてください。',
-      { cause: error },
-    )
+    throw new Error(i18n.t('ultraHdr.moduleLoad'), { cause: error })
   }
 }
 
@@ -36,11 +35,11 @@ export const encodeUltraHDR = async (base: ImageData, gainmap: ImageData) => {
   const module = await loadModule()
   const init = module.default
   if (typeof init !== 'function') {
-    throw new Error('libultrahdr-wasmの初期化関数が見つかりません。')
+    throw new Error(i18n.t('ultraHdr.missingInit'))
   }
   const instance = await (init as UltraHDRModule)()
   if (!instance?.appendGainMap) {
-    throw new Error('libultrahdr-wasmのappendGainMapが見つかりません。')
+    throw new Error(i18n.t('ultraHdr.missingAppendGainMap'))
   }
   const [sdrBytes, gainmapBytes] = await Promise.all([
     imageDataToJpeg(base),
@@ -80,7 +79,7 @@ const imageDataToJpeg = async (imageData: ImageData) => {
   canvas.height = imageData.height
   const context = canvas.getContext('2d')
   if (!context) {
-    throw new Error('JPEG変換用のキャンバスが作成できません。')
+    throw new Error(i18n.t('ultraHdr.jpegCanvas'))
   }
   context.putImageData(imageData, 0, 0)
   const blob = await new Promise<Blob>((resolve, reject) => {
@@ -89,7 +88,7 @@ const imageDataToJpeg = async (imageData: ImageData) => {
         if (result) {
           resolve(result)
         } else {
-          reject(new Error('JPEGの生成に失敗しました。'))
+          reject(new Error(i18n.t('ultraHdr.jpegGenerate')))
         }
       },
       'image/jpeg',

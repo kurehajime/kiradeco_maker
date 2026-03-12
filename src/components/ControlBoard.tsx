@@ -1,4 +1,5 @@
 import type { Dispatch, SetStateAction } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { EditorMode, EffectType, PenType, StampType } from '../editorTypes'
 import type { SizeBounds } from '../lib/editorSizing'
 
@@ -45,6 +46,8 @@ export function ControlBoard({
   stampType,
   undoCount,
 }: ControlBoardProps) {
+  const { t } = useTranslation()
+
   return (
     <section className="control-board">
       <div className="control-panel control-panel--mode">
@@ -59,9 +62,9 @@ export function ControlBoard({
             alt=""
             aria-hidden="true"
           />
-          <span className="mode-button__label">読込</span>
+          <span className="mode-button__label">{t('controls.open')}</span>
         </button>
-        <div className="mode-button-cluster" role="group" aria-label="編集モード">
+        <div className="mode-button-cluster" role="group" aria-label={t('controls.modesAriaLabel')}>
           <button
             type="button"
             className={`mode-button mode-button--joined mode-button--joined-start${editorMode === 'pen' ? ' mode-button--active' : ''}`}
@@ -75,7 +78,7 @@ export function ControlBoard({
               alt=""
               aria-hidden="true"
             />
-            <span className="mode-button__label">ペン</span>
+            <span className="mode-button__label">{t('controls.pen')}</span>
           </button>
           <button
             type="button"
@@ -90,7 +93,7 @@ export function ControlBoard({
               alt=""
               aria-hidden="true"
             />
-            <span className="mode-button__label">判子</span>
+            <span className="mode-button__label">{t('controls.stamp')}</span>
           </button>
           <button
             type="button"
@@ -105,7 +108,7 @@ export function ControlBoard({
               alt=""
               aria-hidden="true"
             />
-            <span className="mode-button__label">効果</span>
+            <span className="mode-button__label">{t('controls.effect')}</span>
           </button>
         </div>
         <button
@@ -120,7 +123,7 @@ export function ControlBoard({
             alt=""
             aria-hidden="true"
           />
-          <span className="mode-button__label">戻す</span>
+          <span className="mode-button__label">{t('controls.undo')}</span>
         </button>
         <button
           type="button"
@@ -134,7 +137,9 @@ export function ControlBoard({
             alt=""
             aria-hidden="true"
           />
-          <span className="mode-button__label">{isGenerating ? '作成中' : '作成'}</span>
+          <span className="mode-button__label">
+            {isGenerating ? t('controls.generating') : t('controls.generate')}
+          </span>
         </button>
       </div>
 
@@ -142,7 +147,7 @@ export function ControlBoard({
         {editorMode === 'pen' && (
           <>
             <label className="control-range">
-              <span>線の太さ</span>
+              <span>{t('controls.penSize')}</span>
               <input
                 type="range"
                 min={sizeBounds.min}
@@ -153,7 +158,7 @@ export function ControlBoard({
               <strong>{penSize}px</strong>
             </label>
             <fieldset className="choice-group">
-              <legend>ペンの種類</legend>
+              <legend>{t('controls.penType')}</legend>
               <label
                 className={
                   penType === 'plain'
@@ -168,7 +173,7 @@ export function ControlBoard({
                   checked={penType === 'plain'}
                   onChange={() => setPenType('plain')}
                 />
-                <span>線</span>
+                <span>{t('controls.plain')}</span>
               </label>
               <label
                 className={
@@ -184,7 +189,7 @@ export function ControlBoard({
                   checked={penType === 'heart'}
                   onChange={() => setPenType('heart')}
                 />
-                <span>ハート</span>
+                <span>{t('controls.heart')}</span>
               </label>
               <label
                 className={
@@ -200,7 +205,7 @@ export function ControlBoard({
                   checked={penType === 'star'}
                   onChange={() => setPenType('star')}
                 />
-                <span>スター</span>
+                <span>{t('controls.star')}</span>
               </label>
             </fieldset>
           </>
@@ -209,7 +214,7 @@ export function ControlBoard({
         {editorMode === 'stamp' && (
           <>
             <label className="control-range">
-              <span>スタンプの大きさ</span>
+              <span>{t('controls.stampSize')}</span>
               <input
                 type="range"
                 min={sizeBounds.min}
@@ -220,7 +225,7 @@ export function ControlBoard({
               <strong>{stampSize}px</strong>
             </label>
             <fieldset className="choice-group">
-              <legend>スタンプの種類</legend>
+              <legend>{t('controls.stampType')}</legend>
               <label
                 className={
                   stampType === 'heart'
@@ -235,7 +240,7 @@ export function ControlBoard({
                   checked={stampType === 'heart'}
                   onChange={() => setStampType('heart')}
                 />
-                <span>ハート</span>
+                <span>{t('controls.heart')}</span>
               </label>
               <label
                 className={
@@ -251,7 +256,7 @@ export function ControlBoard({
                   checked={stampType === 'star'}
                   onChange={() => setStampType('star')}
                 />
-                <span>スター</span>
+                <span>{t('controls.star')}</span>
               </label>
             </fieldset>
           </>
@@ -259,7 +264,7 @@ export function ControlBoard({
 
         {editorMode === 'effect' && (
           <fieldset className="choice-group">
-            <legend>エフェクト</legend>
+            <legend>{t('controls.effects')}</legend>
             <button
               type="button"
               className={
@@ -278,7 +283,7 @@ export function ControlBoard({
                 alt=""
                 aria-hidden="true"
               />
-              <span>ホログラム</span>
+              <span>{t('controls.hologram')}</span>
             </button>
           </fieldset>
         )}

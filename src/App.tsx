@@ -1,5 +1,6 @@
 import type { ChangeEvent, CSSProperties } from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import './App.css'
 import hologramUrl from './assets/kira.png'
 import { AppHeader } from './components/AppHeader'
@@ -15,6 +16,7 @@ import { encodeUltraHDR } from './ultrahdr'
 const DRAW_LAYER_PREVIEW_OPACITY = 0.7
 
 function App() {
+  const { i18n, t } = useTranslation()
   const [imageName, setImageName] = useState<string | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -57,14 +59,14 @@ function App() {
 
   const loadImage = useCallback(async (file: File) => {
     const imageUrl = URL.createObjectURL(file)
-    const image = await loadImageSource(imageUrl, '画像の読み込みに失敗しました。')
+    const image = await loadImageSource(imageUrl, t('app.errors.imageLoad'))
     URL.revokeObjectURL(imageUrl)
     return image
-  }, [])
+  }, [t])
 
   const loadImageFromUrl = useCallback(async (url: string) => {
-    return loadImageSource(url, 'ホログラム画像の読み込みに失敗しました。')
-  }, [])
+    return loadImageSource(url, t('app.errors.hologramLoad'))
+  }, [t])
 
   const loadHologramPattern = useCallback(
     async (width: number, height: number) => {
@@ -78,7 +80,7 @@ function App() {
       canvas.height = height
       const context = canvas.getContext('2d')
       if (!context) {
-        throw new Error('ホログラム描画用のキャンバスが作成できません。')
+        throw new Error(t('app.errors.hologramCanvas'))
       }
       const tileSize = Math.min(width, height)
       for (let y = 0; y < height; y += tileSize) {
@@ -91,7 +93,7 @@ function App() {
       hologramCacheRef.current = { width, height, data: cachedData }
       return cachedData
     },
-    [loadImageFromUrl],
+    [loadImageFromUrl, t],
   )
 
   const resetCanvases = useCallback((width: number, height: number) => {
@@ -152,17 +154,17 @@ function App() {
         const baseCanvas = baseCanvasRef.current
         const baseContext = baseCanvas?.getContext('2d')
         if (!baseContext) {
-          throw new Error('ベース画像の描画に失敗しました。')
+          throw new Error(t('app.errors.baseDraw'))
         }
         baseContext.clearRect(0, 0, image.width, image.height)
         baseContext.drawImage(image, 0, 0)
         setImageName(file.name)
       } catch (loadError) {
-        setError(loadError instanceof Error ? loadError.message : '画像の読み込みに失敗しました。')
+        setError(loadError instanceof Error ? loadError.message : t('app.errors.imageLoad'))
         setCanvasSize(null)
       }
     },
-    [clearUndoHistory, loadImage, resetCanvases, revokePreviewUrl],
+    [clearUndoHistory, loadImage, resetCanvases, revokePreviewUrl, t],
   )
 
   const openFilePicker = useCallback(() => {
@@ -204,6 +206,11 @@ function App() {
     image.src = `${import.meta.env.BASE_URL}heart.svg`
     heartImageRef.current = image
   }, [])
+
+  useEffect(() => {
+    document.title = t('app.title')
+    document.documentElement.lang = i18n.language
+  }, [i18n.language, t])
 
   useEffect(() => {
     if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
@@ -505,11 +512,11 @@ function App() {
         setError(
           effectError instanceof Error
             ? effectError.message
-            : 'エフェクトの反映に失敗しました。',
+            : t('app.errors.effectApply'),
         )
       }
     },
-    [applyHologramPattern, hasImage, pushUndoSnapshot],
+    [applyHologramPattern, hasImage, pushUndoSnapshot, t],
   )
 
   const handleGenerate = useCallback(async () => {
@@ -531,12 +538,12 @@ function App() {
       setError(
         encodeError instanceof Error
           ? encodeError.message
-          : 'UltraHDRの生成に失敗しました。',
+          : t('app.errors.ultraHdrGenerate'),
       )
     } finally {
       setIsGenerating(false)
     }
-  }, [buildGainmap, revokePreviewUrl])
+  }, [buildGainmap, revokePreviewUrl, t])
 
   return (
     <div className="app">
