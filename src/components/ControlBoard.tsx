@@ -53,7 +53,7 @@ export function ControlBoard({
       <div className="control-panel control-panel--mode">
         <button
           type="button"
-          className={`mode-button mode-button--action${!hasImage ? ' mode-button--action-emphasis' : ''}`}
+          className="mode-button mode-button--action"
           onClick={onOpenFilePicker}
         >
           <img

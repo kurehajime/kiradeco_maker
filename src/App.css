@@ -174,6 +174,27 @@ button,
   text-align: center;
 }
 
+@keyframes emphasis-sheen {
+  0%,
+  12% {
+    background-position:
+      135% 50%,
+      0 0;
+  }
+
+  55% {
+    background-position:
+      -40% 50%,
+      0 0;
+  }
+
+  100% {
+    background-position:
+      -40% 50%,
+      0 0;
+  }
+}
+
 .image-intro__button {
   --button-background: var(--button-main-emphasis);
   --button-background-hover: var(--button-main-emphasis-hover);
@@ -189,6 +210,24 @@ button,
   justify-content: center;
   gap: 0.72rem;
   color: var(--text-inverse);
+  background-image:
+    linear-gradient(
+      115deg,
+      transparent 20%,
+      rgba(255, 255, 255, 0.08) 34%,
+      rgba(255, 255, 255, 0.38) 46%,
+      rgba(255, 255, 255, 0.08) 58%,
+      transparent 72%
+    ),
+    var(--button-soft-gradient);
+  background-size:
+    220% 100%,
+    100% 100%;
+  background-position:
+    135% 50%,
+    0 0;
+  background-repeat: no-repeat;
+  animation: emphasis-sheen 3.4s ease-in-out infinite;
 }
 
 .image-intro__button-icon {
@@ -329,6 +368,24 @@ button,
   --button-shadow-stack-hover: var(--main-shadow-stack-hover);
   --button-soft-gradient: var(--button-soft-gradient-strong);
   color: var(--text-inverse);
+  background-image:
+    linear-gradient(
+      115deg,
+      transparent 20%,
+      rgba(255, 255, 255, 0.08) 34%,
+      rgba(255, 255, 255, 0.38) 46%,
+      rgba(255, 255, 255, 0.08) 58%,
+      transparent 72%
+    ),
+    var(--button-soft-gradient);
+  background-size:
+    220% 100%,
+    100% 100%;
+  background-position:
+    135% 50%,
+    0 0;
+  background-repeat: no-repeat;
+  animation: emphasis-sheen 3.4s ease-in-out infinite;
 }
 
 .mode-button--action-emphasis.mode-button--primary {
@@ -366,6 +423,16 @@ button,
   background: var(--button-background);
   box-shadow: var(--button-shadow-stack);
   z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .image-intro__button,
+  .mode-button--action-emphasis {
+    animation: none;
+    background-position:
+      135% 50%,
+      0 0;
+  }
 }
 
 .control-panel--detail {
@@ -424,7 +491,7 @@ button,
   background-color: var(--button-background);
   background-image: var(--button-soft-gradient);
   color: var(--text-accent);
-  font-weight: 700;
+  font-weight: 800;
   box-shadow: var(--button-shadow-stack);
   cursor: pointer;
   transition:
@@ -521,7 +588,7 @@ button {
   color: var(--text-inverse);
   font-family: inherit;
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
   box-shadow: var(--button-shadow-stack);
   transition:
