@@ -6,27 +6,27 @@
   background-color: var(--bg-main);
   --bg-main: #fff7fb;
   --bg-panel: #fffdfd;
-  --bg-pink: #ffd8eb;
-  --bg-soft-pink: #fff6fa;
-  --bg-soft-pink-hover: #fff0f7;
+  --bg-pink: color-mix(in srgb, var(--button-main) 28%, white);
+  --bg-soft-pink: color-mix(in srgb, var(--button-main) 10%, white);
+  --bg-soft-pink-hover: color-mix(in srgb, var(--button-main) 16%, white);
   --bg-canvas: #ffffff;
   --text-main: #74426a;
   --text-accent: #8b4d7b;
   --text-inverse: var(--bg-canvas);
-  --panel-border-strong: #f3a8cd;
-  --panel-border-soft: #f3bdd8;
+  --panel-border-strong: color-mix(in srgb, var(--button-main) 42%, white);
+  --panel-border-soft: color-mix(in srgb, var(--button-main) 26%, white);
   --button-main: #ff82bb;
-  --button-main-strong: #ff5da7;
+  --button-main-strong: color-mix(in srgb, var(--button-main) 78%, #ff2f8f);
   --button-disabled: #dcbecf;
-  --button-edge-pink: #e5a8c8;
-  --button-edge-main: #e364a0;
-  --button-edge-main-hover: #d85793;
+  --button-edge-pink: color-mix(in srgb, var(--button-main) 40%, white);
+  --button-edge-main: color-mix(in srgb, var(--button-main) 72%, black);
+  --button-edge-main-hover: color-mix(in srgb, var(--button-main) 82%, black);
   --button-edge-disabled: #b79cad;
-  --button-shadow-pink: rgba(229, 168, 200, 0.34);
-  --button-shadow-pink-hover: rgba(229, 168, 200, 0.28);
-  --button-shadow-main: rgba(227, 100, 160, 0.34);
-  --button-shadow-main-hover: rgba(216, 87, 147, 0.28);
-  --button-shadow-pressed: rgba(168, 96, 136, 0.2);
+  --button-shadow-pink: color-mix(in srgb, var(--button-edge-pink) 34%, transparent);
+  --button-shadow-pink-hover: color-mix(in srgb, var(--button-edge-pink) 28%, transparent);
+  --button-shadow-main: color-mix(in srgb, var(--button-edge-main) 34%, transparent);
+  --button-shadow-main-hover: color-mix(in srgb, var(--button-edge-main-hover) 28%, transparent);
+  --button-shadow-pressed: color-mix(in srgb, var(--button-edge-main-hover) 20%, transparent);
   --button-shadow-disabled: rgba(183, 156, 173, 0.2);
   --pink-shadow-stack:
     0 6px 0 var(--button-edge-pink),
@@ -66,7 +66,7 @@
     linear-gradient(180deg, var(--bg-soft-pink) 0%, var(--bg-soft-pink-hover) 100%);
   --intro-card-shadow:
     inset 0 3px 0 rgba(255, 255, 255, 0.9),
-    0 6px 14px rgba(229, 168, 200, 0.18);
+    0 6px 14px color-mix(in srgb, var(--button-edge-pink) 18%, transparent);
   --arrow-accent: var(--button-edge-main-hover);
   --modal-backdrop: rgba(116, 66, 106, 0.45);
   --input-accent: var(--button-main-strong);
