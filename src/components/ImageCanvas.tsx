@@ -6,6 +6,7 @@ type ImageCanvasProps = {
   canvasStackStyle?: CSSProperties
   drawCanvasRef: RefObject<HTMLCanvasElement | null>
   hasImage: boolean
+  isHdrSupported: boolean | null
   onOpenFilePicker: () => void
   onPointerDown: PointerEventHandler<HTMLCanvasElement>
   onPointerMove: PointerEventHandler<HTMLCanvasElement>
@@ -18,6 +19,7 @@ export function ImageCanvas({
   canvasStackStyle,
   drawCanvasRef,
   hasImage,
+  isHdrSupported,
   onOpenFilePicker,
   onPointerDown,
   onPointerMove,
@@ -42,7 +44,7 @@ export function ImageCanvas({
         />
         {!hasImage && (
           <div className="canvas-intro-layer">
-            <ImageIntro onOpenFilePicker={onOpenFilePicker} />
+            <ImageIntro isHdrSupported={isHdrSupported} onOpenFilePicker={onOpenFilePicker} />
           </div>
         )}
       </div>

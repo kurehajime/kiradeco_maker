@@ -18,6 +18,7 @@ function App() {
   const [imageName, setImageName] = useState<string | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [isHdrSupported, setIsHdrSupported] = useState<boolean | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
   const [undoCount, setUndoCount] = useState(0)
   const [editorMode, setEditorMode] = useState<EditorMode>('pen')
@@ -202,6 +203,39 @@ function App() {
     const image = new Image()
     image.src = `${import.meta.env.BASE_URL}heart.svg`
     heartImageRef.current = image
+  }, [])
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+      setIsHdrSupported(false)
+      return
+    }
+
+    let mediaQuery: MediaQueryList
+    try {
+      mediaQuery = window.matchMedia('(dynamic-range: high)')
+    } catch {
+      setIsHdrSupported(false)
+      return
+    }
+
+    const updateHdrSupport = () => {
+      setIsHdrSupported(mediaQuery.matches)
+    }
+
+    updateHdrSupport()
+
+    if (typeof mediaQuery.addEventListener === 'function') {
+      mediaQuery.addEventListener('change', updateHdrSupport)
+      return () => {
+        mediaQuery.removeEventListener('change', updateHdrSupport)
+      }
+    }
+
+    mediaQuery.addListener(updateHdrSupport)
+    return () => {
+      mediaQuery.removeListener(updateHdrSupport)
+    }
   }, [])
 
   const drawPenStroke = useCallback(
@@ -520,6 +554,7 @@ function App() {
         canvasStackStyle={canvasStackStyle}
         drawCanvasRef={drawCanvasRef}
         hasImage={hasImage}
+        isHdrSupported={isHdrSupported}
         onOpenFilePicker={openFilePicker}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}

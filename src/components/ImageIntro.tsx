@@ -1,8 +1,9 @@
 type ImageIntroProps = {
+  isHdrSupported: boolean | null
   onOpenFilePicker: () => void
 }
 
-export function ImageIntro({ onOpenFilePicker }: ImageIntroProps) {
+export function ImageIntro({ isHdrSupported, onOpenFilePicker }: ImageIntroProps) {
   const assetBase = import.meta.env.BASE_URL
 
   return (
@@ -28,6 +29,10 @@ export function ImageIntro({ onOpenFilePicker }: ImageIntroProps) {
           </figure>
         </div>
       </div>
+
+      {isHdrSupported === false && (
+        <p className="image-intro__notice">※キラキラはHDR対応端末でのみ表示されます。あなたの環境はHDRに対応していないようです</p>
+      )}
 
       <button type="button" className="image-intro__button" onClick={onOpenFilePicker}>
         <span className="image-intro__button-icon" aria-hidden="true">
