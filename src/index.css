@@ -17,8 +17,8 @@
   --panel-border-soft: color-mix(in srgb, var(--button-main) 26%, white);
   --button-main: #ff82bb;
   --button-main-strong: color-mix(in srgb, var(--button-main) 78%, #ff2f8f);
-  --button-main-emphasis: color-mix(in srgb, var(--button-main) 76%, white);
-  --button-main-emphasis-hover: color-mix(in srgb, var(--button-main-strong) 70%, white);
+  --button-main-emphasis: color-mix(in srgb, var(--button-main) 72%, #ff5fa8);
+  --button-main-emphasis-hover: color-mix(in srgb, var(--button-main-strong) 74%, #ff78b5);
   --button-disabled: #dcbecf;
   --button-edge-pink: color-mix(in srgb, var(--button-main) 56%, white);
   --button-edge-main: color-mix(in srgb, var(--button-main) 72%, black);

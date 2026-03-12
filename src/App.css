@@ -189,9 +189,6 @@ button,
   justify-content: center;
   gap: 0.72rem;
   color: var(--text-inverse);
-  text-shadow:
-    0 1px 0 var(--button-edge-main),
-    0 1px 2px var(--button-shadow-main);
 }
 
 .image-intro__button-icon {
@@ -216,6 +213,8 @@ button,
 .image-intro__button-label {
   font-size: 0.95rem;
   line-height: 1;
+  -webkit-text-stroke: 1px var(--button-edge-main);
+  paint-order: stroke fill;
 }
 
 .control-board {
@@ -330,9 +329,6 @@ button,
   --button-shadow-stack-hover: var(--main-shadow-stack-hover);
   --button-soft-gradient: var(--button-soft-gradient-strong);
   color: var(--text-inverse);
-  text-shadow:
-    0 1px 0 var(--button-edge-main),
-    0 1px 2px var(--button-shadow-main);
 }
 
 .mode-button--action-emphasis.mode-button--primary {
@@ -352,6 +348,11 @@ button,
 
 .mode-button--action .mode-button__label {
   font-size: 0.72rem;
+}
+
+.mode-button--action-emphasis .mode-button__label {
+  -webkit-text-stroke: 0.95px var(--button-edge-main);
+  paint-order: stroke fill;
 }
 
 .mode-button--active {
