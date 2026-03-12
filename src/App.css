@@ -175,8 +175,8 @@ button,
 }
 
 .image-intro__button {
-  --button-background: var(--button-main);
-  --button-background-hover: var(--button-main-strong);
+  --button-background: var(--button-main-emphasis);
+  --button-background-hover: var(--button-main-emphasis-hover);
   --button-edge-color: var(--button-edge-main);
   --button-shadow-stack: var(--main-shadow-stack);
   --button-shadow-stack-hover: var(--main-shadow-stack-hover);
@@ -189,6 +189,9 @@ button,
   justify-content: center;
   gap: 0.72rem;
   color: var(--text-inverse);
+  text-shadow:
+    0 1px 0 var(--button-edge-main),
+    0 1px 2px var(--button-shadow-main);
 }
 
 .image-intro__button-icon {
@@ -204,7 +207,10 @@ button,
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: brightness(0) invert(1);
+  filter:
+    brightness(0) invert(1)
+    drop-shadow(0 1px 0 var(--button-edge-main))
+    drop-shadow(0 1px 2px var(--button-shadow-main));
 }
 
 .image-intro__button-label {
@@ -261,7 +267,7 @@ button,
   border: 3px solid var(--button-edge-color);
   background-color: var(--button-background);
   background-image: var(--button-soft-gradient);
-  color: var(--text-main);
+  color: var(--text-accent);
 }
 
 .mode-button--joined {
@@ -313,17 +319,20 @@ button,
   min-height: 3.3rem;
   padding: 0.4rem 0.2rem;
   border-radius: 16px;
-  color: var(--text-main);
+  color: var(--text-accent);
 }
 
 .mode-button--action-emphasis {
-  --button-background: var(--button-main);
-  --button-background-hover: var(--button-main-strong);
+  --button-background: var(--button-main-emphasis);
+  --button-background-hover: var(--button-main-emphasis-hover);
   --button-edge-color: var(--button-edge-main);
   --button-shadow-stack: var(--main-shadow-stack);
   --button-shadow-stack-hover: var(--main-shadow-stack-hover);
   --button-soft-gradient: var(--button-soft-gradient-strong);
   color: var(--text-inverse);
+  text-shadow:
+    0 1px 0 var(--button-edge-main),
+    0 1px 2px var(--button-shadow-main);
 }
 
 .mode-button--action-emphasis.mode-button--primary {
@@ -331,11 +340,14 @@ button,
 }
 
 .mode-button--action-emphasis .mode-button__icon {
-  filter: brightness(0) invert(1);
+  filter:
+    brightness(0) invert(1)
+    drop-shadow(0 1px 0 var(--button-edge-main))
+    drop-shadow(0 1px 2px var(--button-shadow-main));
 }
 
 .mode-button--primary {
-  color: var(--text-main);
+  color: var(--text-accent);
 }
 
 .mode-button--action .mode-button__label {
@@ -370,7 +382,7 @@ button,
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 0.6rem;
-  color: var(--text-main);
+  color: var(--text-accent);
   font-size: 0.95rem;
 }
 
@@ -391,7 +403,7 @@ button,
 .choice-group legend {
   margin-bottom: 0.1rem;
   padding: 0;
-  color: var(--text-main);
+  color: var(--text-accent);
   font-size: 0.95rem;
 }
 
@@ -410,7 +422,7 @@ button,
   border: 3px solid var(--button-edge-color);
   background-color: var(--button-background);
   background-image: var(--button-soft-gradient);
-  color: var(--text-main);
+  color: var(--text-accent);
   font-weight: 700;
   box-shadow: var(--button-shadow-stack);
   cursor: pointer;
@@ -455,7 +467,7 @@ button,
   border: 3px solid var(--button-edge-color);
   background-color: var(--button-background);
   background-image: var(--button-soft-gradient);
-  color: var(--text-main);
+  color: var(--text-accent);
   box-shadow: var(--button-shadow-stack);
   transition:
     transform 0.12s ease,
@@ -487,7 +499,7 @@ button,
   justify-content: center;
   gap: 0.4rem;
   text-align: center;
-  color: var(--text-main);
+  color: var(--text-accent);
 }
 
 .control-empty p,
