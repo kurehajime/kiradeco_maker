@@ -11,6 +11,21 @@
   display: none;
 }
 
+.app__header,
+.image-area,
+.canvas-stack,
+.image-intro,
+.control-board,
+.control-empty,
+.preview-modal__header,
+button,
+.choice-group__option,
+.choice-group__action {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
 .app__title {
   display: inline-flex;
   align-items: center;
