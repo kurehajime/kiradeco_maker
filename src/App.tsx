@@ -229,10 +229,10 @@ function App() {
       if (!context || !heartImage?.complete || heartImage.naturalWidth === 0 || heartImage.naturalHeight === 0) {
         return
       }
-      const spacing = Math.max(4, penSize * 0.36)
+      const spacing = Math.max(5, penSize * 0.42)
       const distance = Math.hypot(to.x - from.x, to.y - from.y)
       const steps = Math.max(1, Math.ceil(distance / spacing))
-      const particleCount = Math.min(5, Math.max(2, Math.round(penSize / 20)))
+      const particleCount = Math.min(3, Math.max(2, Math.round(penSize / 24)))
       const spread = penSize * 0.65
       const aspect = heartImage.naturalHeight / heartImage.naturalWidth
       context.save()
@@ -268,10 +268,10 @@ function App() {
       const drawCanvas = drawCanvasRef.current
       const context = drawCanvas?.getContext('2d')
       if (!context) return
-      const spacing = Math.max(6, penSize * 0.42)
+      const spacing = Math.max(7, penSize * 0.48)
       const distance = Math.hypot(to.x - from.x, to.y - from.y)
       const steps = Math.max(1, Math.ceil(distance / spacing))
-      const particleCount = Math.min(4, Math.max(1, Math.round(penSize / 24)))
+      const particleCount = Math.min(3, Math.max(1, Math.round(penSize / 28)))
       const spread = penSize * 0.48
       context.save()
       context.fillStyle = 'rgba(255, 255, 255, 0.94)'
