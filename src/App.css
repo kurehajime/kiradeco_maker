@@ -325,8 +325,8 @@
 }
 
 .mode-button--active {
-  --button-background: var(--pink-pressed-bg);
-  --button-background-hover: var(--pink-pressed-bg);
+  --button-background: var(--bg-pink);
+  --button-background-hover: var(--bg-pink);
   --button-edge-color: var(--button-edge-pressed);
   --button-shadow-stack: var(--pink-pressed-shadow-stack);
   --button-shadow-stack-hover: var(--pink-pressed-shadow-stack);
@@ -402,8 +402,8 @@
 }
 
 .choice-group__option--active {
-  --button-background: var(--pink-pressed-bg);
-  --button-background-hover: var(--pink-pressed-bg);
+  --button-background: var(--bg-pink);
+  --button-background-hover: var(--bg-pink);
   --button-edge-color: var(--button-edge-pressed);
   --button-shadow-stack: var(--pink-pressed-shadow-stack);
   --button-shadow-stack-hover: var(--pink-pressed-shadow-stack);
@@ -445,8 +445,8 @@
 }
 
 .choice-group__action--active {
-  --button-background: var(--pink-pressed-bg);
-  --button-background-hover: var(--pink-pressed-bg);
+  --button-background: var(--bg-pink);
+  --button-background-hover: var(--bg-pink);
   --button-edge-color: var(--button-edge-pressed);
   --button-shadow-stack: var(--pink-pressed-shadow-stack);
   --button-shadow-stack-hover: var(--pink-pressed-shadow-stack);
