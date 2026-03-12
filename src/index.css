@@ -18,12 +18,12 @@
   --button-main: #ff82bb;
   --button-main-strong: color-mix(in srgb, var(--button-main) 78%, #ff2f8f);
   --button-disabled: #dcbecf;
-  --button-edge-pink: color-mix(in srgb, var(--button-main) 40%, white);
+  --button-edge-pink: color-mix(in srgb, var(--button-main) 56%, white);
   --button-edge-main: color-mix(in srgb, var(--button-main) 72%, black);
   --button-edge-main-hover: color-mix(in srgb, var(--button-main) 82%, black);
   --button-edge-disabled: #b79cad;
-  --button-shadow-pink: color-mix(in srgb, var(--button-edge-pink) 34%, transparent);
-  --button-shadow-pink-hover: color-mix(in srgb, var(--button-edge-pink) 28%, transparent);
+  --button-shadow-pink: color-mix(in srgb, var(--button-edge-pink) 46%, transparent);
+  --button-shadow-pink-hover: color-mix(in srgb, var(--button-edge-pink) 36%, transparent);
   --button-shadow-main: color-mix(in srgb, var(--button-edge-main) 34%, transparent);
   --button-shadow-main-hover: color-mix(in srgb, var(--button-edge-main-hover) 28%, transparent);
   --button-shadow-pressed: color-mix(in srgb, var(--button-edge-main-hover) 20%, transparent);
