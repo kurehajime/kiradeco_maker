@@ -534,6 +534,7 @@ button:disabled {
   background: var(--button-disabled);
   border-color: var(--button-edge-disabled);
   box-shadow: var(--disabled-shadow-stack);
+  color: var(--button-edge-disabled);
   cursor: not-allowed;
 }
 
