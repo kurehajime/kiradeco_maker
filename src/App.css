@@ -210,8 +210,6 @@ button,
 .image-intro__button-label {
   font-size: 0.95rem;
   line-height: 1;
-  -webkit-text-stroke: 1px var(--button-edge-main);
-  paint-order: stroke fill;
 }
 
 .control-board {
