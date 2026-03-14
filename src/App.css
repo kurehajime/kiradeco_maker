@@ -49,6 +49,8 @@ button,
   line-height: 1.05;
   letter-spacing: 0.03em;
   transform: translateY(-0.06em);
+  -webkit-text-stroke: 0.45px #ffffff;
+  paint-order: stroke fill;
 }
 
 .image-area {
@@ -174,27 +176,6 @@ button,
   text-align: center;
 }
 
-@keyframes emphasis-sheen {
-  0%,
-  12% {
-    background-position:
-      135% 50%,
-      0 0;
-  }
-
-  55% {
-    background-position:
-      -40% 50%,
-      0 0;
-  }
-
-  100% {
-    background-position:
-      -40% 50%,
-      0 0;
-  }
-}
-
 .image-intro__button {
   --button-background: var(--button-main-emphasis);
   --button-background-hover: var(--button-main-emphasis-hover);
@@ -210,24 +191,6 @@ button,
   justify-content: center;
   gap: 0.72rem;
   color: var(--text-inverse);
-  background-image:
-    linear-gradient(
-      115deg,
-      transparent 20%,
-      rgba(255, 255, 255, 0.08) 34%,
-      rgba(255, 255, 255, 0.38) 46%,
-      rgba(255, 255, 255, 0.08) 58%,
-      transparent 72%
-    ),
-    var(--button-soft-gradient);
-  background-size:
-    220% 100%,
-    100% 100%;
-  background-position:
-    135% 50%,
-    0 0;
-  background-repeat: no-repeat;
-  animation: emphasis-sheen 3.4s ease-in-out infinite;
 }
 
 .image-intro__button-icon {
@@ -305,7 +268,7 @@ button,
   border: 3px solid var(--button-edge-color);
   background-color: var(--button-background);
   background-image: var(--button-soft-gradient);
-  color: var(--text-accent);
+  color: var(--text-cool-accent);
 }
 
 .mode-button--joined {
@@ -343,6 +306,7 @@ button,
   height: 1.6rem;
   object-fit: contain;
   flex: 0 0 auto;
+  filter: var(--icon-filter-cool);
 }
 
 .mode-button__label {
@@ -357,7 +321,7 @@ button,
   min-height: 3.3rem;
   padding: 0.4rem 0.2rem;
   border-radius: 16px;
-  color: var(--text-accent);
+  color: var(--text-cool-accent);
 }
 
 .mode-button--action-emphasis {
@@ -368,24 +332,6 @@ button,
   --button-shadow-stack-hover: var(--main-shadow-stack-hover);
   --button-soft-gradient: var(--button-soft-gradient-strong);
   color: var(--text-inverse);
-  background-image:
-    linear-gradient(
-      115deg,
-      transparent 20%,
-      rgba(255, 255, 255, 0.08) 34%,
-      rgba(255, 255, 255, 0.38) 46%,
-      rgba(255, 255, 255, 0.08) 58%,
-      transparent 72%
-    ),
-    var(--button-soft-gradient);
-  background-size:
-    220% 100%,
-    100% 100%;
-  background-position:
-    135% 50%,
-    0 0;
-  background-repeat: no-repeat;
-  animation: emphasis-sheen 3.4s ease-in-out infinite;
 }
 
 .mode-button--action-emphasis.mode-button--primary {
@@ -400,7 +346,7 @@ button,
 }
 
 .mode-button--primary {
-  color: var(--text-accent);
+  color: var(--text-cool-accent);
 }
 
 .mode-button--action .mode-button__label {
@@ -415,7 +361,7 @@ button,
 .mode-button--active {
   --button-background: var(--bg-pink);
   --button-background-hover: var(--bg-pink);
-  --button-edge-color: var(--button-edge-main-hover);
+  --button-edge-color: var(--button-edge-selected);
   --button-shadow-stack: var(--pink-pressed-shadow-stack);
   --button-shadow-stack-hover: var(--pink-pressed-shadow-stack);
   transform: translateY(4px);
@@ -429,9 +375,6 @@ button,
   .image-intro__button,
   .mode-button--action-emphasis {
     animation: none;
-    background-position:
-      135% 50%,
-      0 0;
   }
 }
 
@@ -490,7 +433,7 @@ button,
   border: 3px solid var(--button-edge-color);
   background-color: var(--button-background);
   background-image: var(--button-soft-gradient);
-  color: var(--text-accent);
+  color: var(--text-cool-accent);
   font-weight: 800;
   box-shadow: var(--button-shadow-stack);
   cursor: pointer;
@@ -503,7 +446,7 @@ button,
 .choice-group__option--active {
   --button-background: var(--bg-pink);
   --button-background-hover: var(--bg-pink);
-  --button-edge-color: var(--button-edge-main-hover);
+  --button-edge-color: var(--button-edge-selected);
   --button-shadow-stack: var(--pink-pressed-shadow-stack);
   --button-shadow-stack-hover: var(--pink-pressed-shadow-stack);
   transform: translateY(4px);
@@ -535,7 +478,7 @@ button,
   border: 3px solid var(--button-edge-color);
   background-color: var(--button-background);
   background-image: var(--button-soft-gradient);
-  color: var(--text-accent);
+  color: var(--text-cool-accent);
   box-shadow: var(--button-shadow-stack);
   transition:
     transform 0.12s ease,
@@ -546,7 +489,7 @@ button,
 .choice-group__action--active {
   --button-background: var(--bg-pink);
   --button-background-hover: var(--bg-pink);
-  --button-edge-color: var(--button-edge-main-hover);
+  --button-edge-color: var(--button-edge-selected);
   --button-shadow-stack: var(--pink-pressed-shadow-stack);
   --button-shadow-stack-hover: var(--pink-pressed-shadow-stack);
   transform: translateY(4px);
@@ -557,6 +500,7 @@ button,
   height: 1.3rem;
   object-fit: contain;
   flex: 0 0 auto;
+  filter: var(--icon-filter-cool);
 }
 
 .control-empty {
@@ -619,7 +563,7 @@ button:not(:disabled):not(.mode-button--active):not(.choice-group__action--activ
   min-height: 2.5rem;
   padding: 0.45rem 0.9rem;
   border-radius: 14px;
-  color: var(--text-accent);
+  color: var(--text-cool-accent);
 }
 
 .subtle-button--share {
@@ -632,6 +576,7 @@ button:not(:disabled):not(.mode-button--active):not(.choice-group__action--activ
   width: 1.2rem;
   height: 1.2rem;
   object-fit: contain;
+  filter: var(--icon-filter-cool);
 }
 
 .preview-modal {

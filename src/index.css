@@ -4,32 +4,38 @@
   font-weight: 400;
   color: var(--text-main);
   background-color: var(--bg-main);
-  --bg-main: #fff7fb;
-  --bg-panel: #fffdfd;
-  --bg-pink: color-mix(in srgb, var(--button-main) 28%, white);
-  --bg-soft-pink: color-mix(in srgb, var(--button-main) 10%, white);
-  --bg-soft-pink-hover: color-mix(in srgb, var(--button-main) 16%, white);
+  --theme-bg: #ffdf76;
+  --theme-line: #cc78be;
+  --theme-cool: #c5e9ea;
+  --theme-warm: #e66171;
+  --bg-main: var(--theme-bg);
+  --bg-panel: color-mix(in srgb, var(--theme-bg) 28%, white);
+  --bg-pink: color-mix(in srgb, var(--theme-cool) 72%, #79b9bd);
+  --bg-soft-pink: color-mix(in srgb, var(--theme-cool) 30%, white);
+  --bg-soft-pink-hover: color-mix(in srgb, var(--theme-cool) 42%, white);
   --bg-canvas: #ffffff;
-  --text-main: #74426a;
-  --text-accent: #8b4d7b;
+  --text-main: color-mix(in srgb, var(--theme-line) 80%, #6f3b68);
+  --text-accent: var(--theme-line);
+  --text-cool-accent: color-mix(in srgb, var(--theme-cool) 82%, #4f8a90);
   --text-inverse: var(--bg-canvas);
-  --panel-border-strong: color-mix(in srgb, var(--button-main) 42%, white);
-  --panel-border-soft: color-mix(in srgb, var(--button-main) 26%, white);
-  --button-main: #ff82bb;
-  --button-main-strong: color-mix(in srgb, var(--button-main) 78%, #ff2f8f);
-  --button-main-emphasis: color-mix(in srgb, var(--button-main) 72%, #ff5fa8);
-  --button-main-emphasis-hover: color-mix(in srgb, var(--button-main-strong) 74%, #ff78b5);
-  --button-disabled: #dcbecf;
-  --button-edge-pink: color-mix(in srgb, var(--button-main) 56%, white);
-  --button-edge-main: color-mix(in srgb, var(--button-main) 72%, black);
-  --button-edge-main-hover: color-mix(in srgb, var(--button-main) 82%, black);
-  --button-edge-disabled: #b79cad;
-  --button-shadow-pink: color-mix(in srgb, var(--button-edge-pink) 46%, transparent);
-  --button-shadow-pink-hover: color-mix(in srgb, var(--button-edge-pink) 36%, transparent);
-  --button-shadow-main: color-mix(in srgb, var(--button-edge-main) 34%, transparent);
-  --button-shadow-main-hover: color-mix(in srgb, var(--button-edge-main-hover) 28%, transparent);
-  --button-shadow-pressed: color-mix(in srgb, var(--button-edge-main-hover) 20%, transparent);
-  --button-shadow-disabled: rgba(183, 156, 173, 0.2);
+  --panel-border-strong: color-mix(in srgb, var(--theme-line) 50%, white);
+  --panel-border-soft: color-mix(in srgb, var(--theme-line) 26%, white);
+  --button-main: var(--theme-warm);
+  --button-main-strong: color-mix(in srgb, var(--theme-warm) 86%, #bc3c57);
+  --button-main-emphasis: color-mix(in srgb, var(--theme-warm) 84%, white);
+  --button-main-emphasis-hover: color-mix(in srgb, var(--theme-warm) 92%, white);
+  --button-disabled: color-mix(in srgb, var(--theme-line) 28%, white);
+  --button-edge-pink: color-mix(in srgb, var(--theme-cool) 72%, #71b6ba);
+  --button-edge-main: color-mix(in srgb, var(--theme-warm) 72%, #a74457);
+  --button-edge-main-hover: color-mix(in srgb, var(--theme-warm) 82%, #a74457);
+  --button-edge-selected: color-mix(in srgb, var(--theme-cool) 82%, #5e9ea4);
+  --button-edge-disabled: color-mix(in srgb, var(--theme-line) 48%, white);
+  --button-shadow-pink: color-mix(in srgb, var(--theme-cool) 34%, transparent);
+  --button-shadow-pink-hover: color-mix(in srgb, var(--theme-cool) 26%, transparent);
+  --button-shadow-main: color-mix(in srgb, var(--theme-warm) 34%, transparent);
+  --button-shadow-main-hover: color-mix(in srgb, var(--theme-warm) 28%, transparent);
+  --button-shadow-pressed: color-mix(in srgb, var(--theme-cool) 26%, transparent);
+  --button-shadow-disabled: color-mix(in srgb, var(--theme-line) 18%, transparent);
   --pink-shadow-stack:
     0 6px 0 var(--button-edge-pink),
     0 11px 18px var(--button-shadow-pink);
@@ -45,34 +51,24 @@
   --pink-pressed-shadow-stack:
     inset 0 4px 8px var(--button-shadow-pressed),
     inset 0 -2px 0 rgba(255, 255, 255, 0.5),
-    0 2px 0 var(--button-edge-main-hover);
+    0 2px 0 var(--button-edge-selected);
   --disabled-shadow-stack:
     0 4px 0 var(--button-edge-disabled),
     0 8px 14px var(--button-shadow-disabled);
-  --button-soft-gradient:
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.5) 0%,
-      rgba(255, 255, 255, 0.18) 34%,
-      rgba(255, 255, 255, 0.04) 100%
-    );
-  --button-soft-gradient-strong:
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.28) 0%,
-      rgba(255, 255, 255, 0.08) 34%,
-      rgba(255, 255, 255, 0.02) 100%
-    );
-  --intro-shell-background:
-    radial-gradient(circle at top, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0) 56%),
-    linear-gradient(180deg, var(--bg-soft-pink) 0%, var(--bg-soft-pink-hover) 100%);
+  --button-soft-gradient: none;
+  --button-soft-gradient-strong: none;
+  --intro-shell-background: color-mix(in srgb, var(--theme-bg) 38%, white);
   --intro-card-shadow:
     inset 0 3px 0 rgba(255, 255, 255, 0.9),
     0 6px 14px color-mix(in srgb, var(--button-edge-pink) 18%, transparent);
-  --arrow-accent: var(--button-edge-main-hover);
-  --modal-backdrop: rgba(116, 66, 106, 0.45);
-  --input-accent: var(--button-main-strong);
-  --error-accent: var(--button-edge-main-hover);
+  --arrow-accent: var(--theme-warm);
+  --modal-backdrop: color-mix(in srgb, var(--theme-line) 42%, transparent);
+  --input-accent: var(--theme-warm);
+  --error-accent: var(--theme-warm);
+  --icon-filter-cool:
+    brightness(0) saturate(100%)
+    invert(70%) sepia(18%) saturate(545%) hue-rotate(137deg)
+    brightness(86%) contrast(88%);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -88,7 +84,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background-color: var(--bg-main);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='144' height='144' viewBox='0 0 144 144'%3E%3Ccircle cx='24' cy='24' r='3' fill='%23ffe1f0'/%3E%3Ccircle cx='72' cy='60' r='3' fill='%23d7fff0'/%3E%3Ccircle cx='120' cy='28' r='3' fill='%23fff2ac'/%3E%3Ccircle cx='48' cy='96' r='3' fill='%23ead8ff'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='144' height='144' viewBox='0 0 144 144'%3E%3Ccircle cx='24' cy='24' r='3' fill='%23cc78be'/%3E%3Ccircle cx='72' cy='60' r='3' fill='%23c5e9ea'/%3E%3Ccircle cx='120' cy='28' r='3' fill='%23e66171'/%3E%3Ccircle cx='48' cy='96' r='3' fill='%23fff0b8'/%3E%3C/svg%3E");
   background-size: 144px 144px;
 }
 
