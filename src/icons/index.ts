@@ -1,4 +1,5 @@
 export { ClearIcon } from './ClearIcon'
+export { CheckIcon } from './CheckIcon'
 export { EffectIcon } from './EffectIcon'
 export { GenerateIcon } from './GenerateIcon'
 export { IconBase, type IconProps } from './IconBase'

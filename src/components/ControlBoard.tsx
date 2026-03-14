@@ -1,7 +1,7 @@
 import type { Dispatch, SetStateAction } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { EditorMode, EffectType, PenType, StampType } from '../editorTypes'
-import { EffectIcon, GenerateIcon, ImageIcon, KiraIcon, PenIcon, StampIcon, UndoIcon } from '../icons'
+import { CheckIcon, EffectIcon, ImageIcon, KiraIcon, PenIcon, StampIcon, UndoIcon } from '../icons'
 import type { SizeBounds } from '../lib/editorSizing'
 
 type ControlBoardProps = {
@@ -107,7 +107,7 @@ export function ControlBoard({
           onClick={onGenerate}
           disabled={!hasImage || isGenerating}
         >
-          <GenerateIcon className="mode-button__icon" aria-hidden="true" />
+          <CheckIcon className="mode-button__icon" aria-hidden="true" />
           <span className="mode-button__label">
             {isGenerating ? t('controls.generating') : t('controls.generate')}
           </span>
