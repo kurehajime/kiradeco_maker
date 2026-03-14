@@ -37,7 +37,7 @@ button,
   width: clamp(0.95rem, 2.5vw, 1.3rem);
   height: clamp(0.95rem, 2.5vw, 1.3rem);
   flex: 0 0 auto;
-  border-radius: 0;
+  border-radius: 16px;
   object-fit: cover;
 }
 
@@ -222,7 +222,7 @@ button,
 
 .control-panel {
   min-width: 0;
-  border-radius: 0;
+  border-radius: 20px;
   background: var(--bg-panel);
   box-shadow: var(--panel-surface-shadow);
   padding: 0.8rem;
@@ -279,13 +279,13 @@ button,
 }
 
 .mode-button--joined-start {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
 }
 
 .mode-button--joined-end {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
+  border-top-right-radius: 16px;
+  border-bottom-right-radius: 16px;
 }
 
 .mode-button--joined:not(.mode-button--active):hover {
@@ -312,7 +312,7 @@ button,
   aspect-ratio: auto;
   min-height: 3.3rem;
   padding: 0.4rem 0.2rem;
-  border-radius: 0;
+  border-radius: 16px;
   color: var(--text-cool-accent);
 }
 
@@ -415,7 +415,7 @@ button,
   justify-content: center;
   min-width: 0;
   min-height: 2.9rem;
-  border-radius: 0;
+  border-radius: 16px;
   border: 3px solid var(--button-edge-color);
   background-color: var(--button-background);
   background-image: var(--button-soft-gradient);
@@ -461,7 +461,7 @@ button,
   justify-content: center;
   gap: 0.55rem;
   min-height: 3rem;
-  border-radius: 0;
+  border-radius: 16px;
   border: 3px solid var(--button-edge-color);
   background-color: var(--button-background);
   background-image: var(--button-soft-gradient);
@@ -512,7 +512,7 @@ button {
   --button-edge-color: var(--button-edge-main);
   --button-shadow-stack: var(--main-shadow-stack);
   --button-shadow-stack-hover: var(--main-shadow-stack-hover);
-  border-radius: 0;
+  border-radius: 16px;
   border: 3px solid var(--button-edge-color);
   background-color: var(--button-background);
   background-image: var(--button-soft-gradient);
@@ -550,7 +550,7 @@ button:not(:disabled):not(.mode-button--active):not(.choice-group__action--activ
   --button-shadow-stack-hover: var(--pink-shadow-stack-hover);
   min-height: 2.5rem;
   padding: 0.45rem 0.9rem;
-  border-radius: 0;
+  border-radius: 14px;
   color: var(--text-cool-accent);
 }
 
