@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { ShareIcon } from '../icons'
 
 type PreviewModalProps = {
   previewUrl: string | null
@@ -68,12 +69,7 @@ export function PreviewModal({ previewUrl, onClose }: PreviewModalProps) {
             }}
             disabled={!canShare || isSharing}
           >
-            <img
-              className="subtle-button__icon"
-              src={`${import.meta.env.BASE_URL}share.svg`}
-              alt=""
-              aria-hidden="true"
-            />
+            <ShareIcon className="subtle-button__icon" aria-hidden="true" />
             <span>{isSharing ? t('preview.sharing') : t('preview.share')}</span>
           </button>
         </div>

@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { ImageIcon } from '../icons'
 
 type ImageIntroProps = {
   isHdrSupported: boolean | null
@@ -39,7 +40,7 @@ export function ImageIntro({ isHdrSupported, onOpenFilePicker }: ImageIntroProps
 
       <button type="button" className="image-intro__button" onClick={onOpenFilePicker}>
         <span className="image-intro__button-icon" aria-hidden="true">
-          <img src={`${assetBase}image.svg`} alt="" />
+          <ImageIcon />
         </span>
         <span className="image-intro__button-label">{t('imageIntro.chooseImage')}</span>
       </button>

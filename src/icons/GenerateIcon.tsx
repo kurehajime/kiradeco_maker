@@ -1,0 +1,12 @@
+import { IconBase, type IconProps } from './IconBase'
+
+export function GenerateIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path
+        fill="currentColor"
+        d="M512,255.995L277.045,65.394v103.574c-17.255,0-36.408,0-57.542,0c-208.59,0-249.35,153.44-201.394,266.128c9.586-103.098,142.053-100.701,237.358-100.701c7.247,0,14.446,0,21.578,0v112.211L512,255.995z"
+      />
+    </IconBase>
+  )
+}

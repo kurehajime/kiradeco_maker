@@ -1,6 +1,7 @@
 import type { Dispatch, SetStateAction } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { EditorMode, EffectType, PenType, StampType } from '../editorTypes'
+import { EffectIcon, GenerateIcon, ImageIcon, KiraIcon, PenIcon, StampIcon, UndoIcon } from '../icons'
 import type { SizeBounds } from '../lib/editorSizing'
 
 type ControlBoardProps = {
@@ -56,12 +57,7 @@ export function ControlBoard({
           className="mode-button mode-button--action"
           onClick={onOpenFilePicker}
         >
-          <img
-            className="mode-button__icon"
-            src={`${import.meta.env.BASE_URL}image.svg`}
-            alt=""
-            aria-hidden="true"
-          />
+          <ImageIcon className="mode-button__icon" aria-hidden="true" />
           <span className="mode-button__label">{t('controls.open')}</span>
         </button>
         <div className="mode-button-cluster" role="group" aria-label={t('controls.modesAriaLabel')}>
@@ -72,12 +68,7 @@ export function ControlBoard({
               onModeSelect('pen')
             }}
           >
-            <img
-              className="mode-button__icon"
-              src={`${import.meta.env.BASE_URL}pen.svg`}
-              alt=""
-              aria-hidden="true"
-            />
+            <PenIcon className="mode-button__icon" aria-hidden="true" />
             <span className="mode-button__label">{t('controls.pen')}</span>
           </button>
           <button
@@ -87,12 +78,7 @@ export function ControlBoard({
               onModeSelect('stamp')
             }}
           >
-            <img
-              className="mode-button__icon"
-              src={`${import.meta.env.BASE_URL}stamp.svg`}
-              alt=""
-              aria-hidden="true"
-            />
+            <StampIcon className="mode-button__icon" aria-hidden="true" />
             <span className="mode-button__label">{t('controls.stamp')}</span>
           </button>
           <button
@@ -102,12 +88,7 @@ export function ControlBoard({
               onModeSelect('effect')
             }}
           >
-            <img
-              className="mode-button__icon"
-              src={`${import.meta.env.BASE_URL}effect.svg`}
-              alt=""
-              aria-hidden="true"
-            />
+            <EffectIcon className="mode-button__icon" aria-hidden="true" />
             <span className="mode-button__label">{t('controls.effect')}</span>
           </button>
         </div>
@@ -117,12 +98,7 @@ export function ControlBoard({
           onClick={onUndo}
           disabled={!hasImage || undoCount === 0}
         >
-          <img
-            className="mode-button__icon"
-            src={`${import.meta.env.BASE_URL}undo.svg`}
-            alt=""
-            aria-hidden="true"
-          />
+          <UndoIcon className="mode-button__icon" aria-hidden="true" />
           <span className="mode-button__label">{t('controls.undo')}</span>
         </button>
         <button
@@ -131,12 +107,7 @@ export function ControlBoard({
           onClick={onGenerate}
           disabled={!hasImage || isGenerating}
         >
-          <img
-            className="mode-button__icon"
-            src={`${import.meta.env.BASE_URL}generate.svg`}
-            alt=""
-            aria-hidden="true"
-          />
+          <GenerateIcon className="mode-button__icon" aria-hidden="true" />
           <span className="mode-button__label">
             {isGenerating ? t('controls.generating') : t('controls.generate')}
           </span>
@@ -277,12 +248,7 @@ export function ControlBoard({
               }}
               disabled={!hasImage}
             >
-              <img
-                className="choice-group__icon"
-                src={`${import.meta.env.BASE_URL}kira.svg`}
-                alt=""
-                aria-hidden="true"
-              />
+              <KiraIcon className="choice-group__icon" aria-hidden="true" />
               <span>{t('controls.hologram')}</span>
             </button>
           </fieldset>
