@@ -189,6 +189,8 @@ button,
   justify-content: center;
   gap: 0.72rem;
   color: var(--text-inverse);
+  animation: emphasis-press 4.2s ease-in-out infinite;
+  will-change: transform, box-shadow;
 }
 
 .image-intro__button-icon {
@@ -327,10 +329,20 @@ button,
   --button-shadow-stack-hover: var(--main-shadow-stack-hover);
   --button-soft-gradient: var(--button-soft-gradient-strong);
   color: var(--text-inverse);
+  animation: emphasis-press 4.2s ease-in-out infinite;
+  will-change: transform, box-shadow;
 }
 
 .mode-button--action-emphasis.mode-button--primary {
   color: var(--text-inverse);
+}
+
+.image-intro__button:hover,
+.mode-button--action-emphasis:hover {
+  animation: none;
+  background-color: var(--button-background-hover);
+  box-shadow: var(--main-shadow-stack-hover);
+  transform: translateY(4px);
 }
 
 .mode-button--primary {
@@ -364,6 +376,25 @@ button,
   .image-intro__button,
   .mode-button--action-emphasis {
     animation: none;
+  }
+}
+
+@keyframes emphasis-press {
+  0%,
+  24%,
+  100% {
+    transform: translateY(0);
+    box-shadow: var(--main-shadow-stack);
+  }
+
+  34% {
+    transform: translateY(1px);
+    box-shadow: var(--main-shadow-stack-hover);
+  }
+
+  44% {
+    transform: translateY(0);
+    box-shadow: var(--main-shadow-stack);
   }
 }
 
