@@ -217,7 +217,7 @@ button,
   background-image: url('/whitekira.jpeg');
   background-size: cover;
   background-position: center;
-  opacity: 0.4;
+  opacity: 0.2;
   pointer-events: none;
   z-index: 0;
 }
