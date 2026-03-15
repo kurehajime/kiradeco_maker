@@ -35,7 +35,7 @@ const resources = {
         stamp: '判子',
         effect: '効果',
         undo: '戻す',
-        generate: '完成♪',
+        generate: '完成',
         generating: '生成中',
         penSize: '線の太さ',
         penType: 'ペンの種類',
@@ -50,7 +50,7 @@ const resources = {
       preview: {
         dialogAriaLabel: '生成プレビュー',
         close: 'とじる',
-        heading: '完成',
+        heading: '完成♪',
         sharing: 'シェア中',
         share: 'シェアする',
         imageAlt: '生成された画像のプレビュー',
