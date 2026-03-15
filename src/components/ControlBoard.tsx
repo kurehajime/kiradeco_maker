@@ -254,6 +254,15 @@ export function ControlBoard({
           </fieldset>
         )}
       </div>
+
+      <a
+        className="control-board__credit"
+        href="https://github.com/kurehajime"
+        target="_blank"
+        rel="noreferrer"
+      >
+        by kurehajime
+      </a>
     </section>
   )
 }
