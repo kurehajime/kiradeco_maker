@@ -11,6 +11,18 @@
   display: none;
 }
 
+.app__header {
+  width: 100%;
+  padding: 0.4rem 0.75rem 0.45rem;
+  border: 4px solid var(--panel-border-strong);
+  border-bottom: 0;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  background: var(--text-accent);
+}
+
 .app__header,
 .image-area,
 .canvas-stack,
@@ -30,7 +42,7 @@ button,
   display: inline-flex;
   align-items: center;
   gap: 0.28rem;
-  color: var(--text-accent);
+  color: var(--text-inverse);
 }
 
 .app__title-icon {
@@ -181,6 +193,9 @@ button,
   --button-shadow-stack: var(--main-shadow-stack);
   --button-shadow-stack-hover: var(--main-shadow-stack-hover);
   --button-soft-gradient: var(--button-soft-gradient-strong);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   width: min(100%, 16rem);
   margin: 0 auto;
   padding: 0.9rem 1.2rem;
@@ -189,9 +204,28 @@ button,
   align-items: center;
   justify-content: center;
   gap: 0.72rem;
-  color: var(--text-inverse);
+  color: var(--text-cool-accent);
   animation: emphasis-press 4.2s ease-in-out infinite;
   will-change: transform, box-shadow;
+}
+
+.image-intro__button::before,
+.mode-button--action-emphasis::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('/whitekira.jpeg');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.image-intro__button > *,
+.mode-button--action-emphasis > * {
+  position: relative;
+  z-index: 1;
 }
 
 .image-intro__button-icon {
@@ -225,7 +259,7 @@ button,
 .control-panel {
   min-width: 0;
   border: 4px solid var(--panel-border-strong);
-  border-radius: 22px;
+  border-radius: 20px;
   background: var(--bg-panel);
   box-shadow: none;
   padding: 0.8rem;
@@ -341,13 +375,16 @@ button,
   --button-shadow-stack: var(--main-shadow-stack);
   --button-shadow-stack-hover: var(--main-shadow-stack-hover);
   --button-soft-gradient: var(--button-soft-gradient-strong);
-  color: var(--text-inverse);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  color: var(--text-cool-accent);
   animation: emphasis-press 4.2s ease-in-out infinite;
   will-change: transform, box-shadow;
 }
 
 .mode-button--action-emphasis.mode-button--primary {
-  color: var(--text-inverse);
+  color: var(--text-cool-accent);
 }
 
 .image-intro__button:hover,
@@ -367,8 +404,7 @@ button,
 }
 
 .mode-button--action-emphasis .mode-button__label {
-  -webkit-text-stroke: 0.95px var(--button-edge-main);
-  paint-order: stroke fill;
+  -webkit-text-stroke: 0;
 }
 
 .mode-button--active {
@@ -411,6 +447,7 @@ button,
   }
 }
 
+
 .control-panel--detail {
   display: flex;
   flex-direction: column;
@@ -419,8 +456,8 @@ button,
   border-top: 0;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
-  border-bottom-left-radius: 32px 26px;
-  border-bottom-right-radius: 18px 34px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
 }
 
 .control-range {
