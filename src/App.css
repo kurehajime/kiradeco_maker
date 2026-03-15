@@ -209,19 +209,6 @@ button,
   will-change: transform, box-shadow;
 }
 
-.image-intro__button::before,
-.mode-button--action-emphasis::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url('/whitekira.jpeg');
-  background-size: cover;
-  background-position: center;
-  opacity: 0.2;
-  pointer-events: none;
-  z-index: 0;
-}
-
 .image-intro__button > *,
 .mode-button--action-emphasis > * {
   position: relative;
@@ -247,7 +234,6 @@ button,
   font-size: 1.2rem;
   line-height: 1;
   font-weight: 800;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.95);
 }
 
 .control-board {
