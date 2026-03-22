@@ -6,22 +6,27 @@ import hologramUrl from './assets/kira.png'
 import { AppHeader } from './components/AppHeader'
 import { ControlBoard } from './components/ControlBoard'
 import { ImageCanvas } from './components/ImageCanvas'
-import { PreviewModal } from './components/PreviewModal'
+import { PreviewModal, type PreviewAsset } from './components/PreviewModal'
 import type { EditorMode, EffectType, PenType, StampType } from './editorTypes'
 import { drawStar, popHistory, pushLimitedHistory } from './lib/canvas'
 import { getDefaultToolSizes, getSizeBounds } from './lib/editorSizing'
-import { loadImageSource } from './lib/image'
+import { loadImageSource, normalizeImageFileToPngBytes } from './lib/image'
 import { encodeUltraHDR } from './ultrahdr'
 
 const DRAW_LAYER_PREVIEW_OPACITY = 0.7
+const XHDR_BACKGROUND_CAP_8 = 255
+const ULTRAHDR_PREVIEW_FILE_NAME = 'kiradeco-maker.jpg'
+const XHDR_PREVIEW_FILE_NAME = 'kiradeco-maker-x.png'
 
 function App() {
   const { i18n, t } = useTranslation()
   const [imageName, setImageName] = useState<string | null>(null)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [preview, setPreview] = useState<PreviewAsset | null>(null)
+  const [sourcePngBytes, setSourcePngBytes] = useState<Uint8Array | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isHdrSupported, setIsHdrSupported] = useState<boolean | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [isGenerateMenuOpen, setIsGenerateMenuOpen] = useState(false)
   const [undoCount, setUndoCount] = useState(0)
   const [editorMode, setEditorMode] = useState<EditorMode>('pen')
   const [penSize, setPenSize] = useState(20)
@@ -48,12 +53,12 @@ function App() {
     return canvas !== null && canvas.width > 0 && canvas.height > 0
   }, [imageName])
 
-  const revokePreviewUrl = useCallback((nextUrl: string | null) => {
-    setPreviewUrl((currentUrl) => {
-      if (currentUrl) {
-        URL.revokeObjectURL(currentUrl)
+  const revokePreview = useCallback((nextPreview: PreviewAsset | null) => {
+    setPreview((currentPreview) => {
+      if (currentPreview) {
+        URL.revokeObjectURL(currentPreview.url)
       }
-      return nextUrl
+      return nextPreview
     })
   }, [])
 
@@ -137,8 +142,9 @@ function App() {
     context.putImageData(snapshot, 0, 0)
     undoStackRef.current = nextHistory
     setUndoCount(nextHistory.length)
-    revokePreviewUrl(null)
-  }, [revokePreviewUrl])
+    setIsGenerateMenuOpen(false)
+    revokePreview(null)
+  }, [revokePreview])
 
   const handleFileChange = useCallback(
     async (event: ChangeEvent<HTMLInputElement>) => {
@@ -146,9 +152,17 @@ function App() {
       if (!file) return
       event.target.value = ''
       setError(null)
-      revokePreviewUrl(null)
+      setIsGenerateMenuOpen(false)
+      revokePreview(null)
       try {
-        const image = await loadImage(file)
+        const [image, pngBytes] = await Promise.all([
+          loadImage(file),
+          normalizeImageFileToPngBytes(file, {
+            canvas: t('app.errors.pngCanvas'),
+            decode: t('app.errors.imageDecode'),
+            pngGenerate: t('app.errors.pngGenerate'),
+          }),
+        ])
         resetCanvases(image.width, image.height)
         clearUndoHistory()
         const baseCanvas = baseCanvasRef.current
@@ -158,16 +172,19 @@ function App() {
         }
         baseContext.clearRect(0, 0, image.width, image.height)
         baseContext.drawImage(image, 0, 0)
+        setSourcePngBytes(pngBytes)
         setImageName(file.name)
       } catch (loadError) {
         setError(loadError instanceof Error ? loadError.message : t('app.errors.imageLoad'))
         setCanvasSize(null)
+        setSourcePngBytes(null)
       }
     },
-    [clearUndoHistory, loadImage, resetCanvases, revokePreviewUrl, t],
+    [clearUndoHistory, loadImage, resetCanvases, revokePreview, t],
   )
 
   const openFilePicker = useCallback(() => {
+    setIsGenerateMenuOpen(false)
     fileInputRef.current?.click()
   }, [])
 
@@ -490,18 +507,20 @@ function App() {
       drawData.data[index + 3] = Math.round(255 * Math.max(baseAlpha, hologramAlpha))
     }
     context.putImageData(drawData, 0, 0)
-    revokePreviewUrl(null)
-  }, [loadHologramPattern, revokePreviewUrl])
+    revokePreview(null)
+  }, [loadHologramPattern, revokePreview])
 
   const handleModeSelect = useCallback((nextMode: EditorMode) => {
     setEditorMode(nextMode)
     setError(null)
+    setIsGenerateMenuOpen(false)
   }, [])
 
   const handleEffectSelect = useCallback(
     async (nextEffect: EffectType) => {
       setEffectType(nextEffect)
       setError(null)
+      setIsGenerateMenuOpen(false)
       if (!hasImage) return
       try {
         if (nextEffect === 'hologram') {
@@ -519,6 +538,12 @@ function App() {
     [applyHologramPattern, hasImage, pushUndoSnapshot, t],
   )
 
+  const handleGenerateMenuToggle = useCallback(() => {
+    if (!hasImage || isGenerating) return
+    setError(null)
+    setIsGenerateMenuOpen((current) => !current)
+  }, [hasImage, isGenerating])
+
   const handleGenerate = useCallback(async () => {
     const baseCanvas = baseCanvasRef.current
     if (!baseCanvas) return
@@ -527,13 +552,16 @@ function App() {
     const gainmap = buildGainmap()
     if (!gainmap) return
     setError(null)
+    setIsGenerateMenuOpen(false)
     setIsGenerating(true)
-    revokePreviewUrl(null)
+    revokePreview(null)
     try {
       const baseImage = baseContext.getImageData(0, 0, baseCanvas.width, baseCanvas.height)
       const blob = await encodeUltraHDR(baseImage, gainmap)
-      const nextUrl = URL.createObjectURL(blob)
-      revokePreviewUrl(nextUrl)
+      revokePreview({
+        fileName: ULTRAHDR_PREVIEW_FILE_NAME,
+        url: URL.createObjectURL(blob),
+      })
     } catch (encodeError) {
       setError(
         encodeError instanceof Error
@@ -543,7 +571,39 @@ function App() {
     } finally {
       setIsGenerating(false)
     }
-  }, [buildGainmap, revokePreviewUrl, t])
+  }, [buildGainmap, revokePreview, t])
+
+  const handleGenerateX = useCallback(async () => {
+    const drawCanvas = drawCanvasRef.current
+    if (!drawCanvas || !sourcePngBytes) {
+      setError(t('xHdr.errors.sourceMissing'))
+      return
+    }
+    setError(null)
+    setIsGenerateMenuOpen(false)
+    setIsGenerating(true)
+    revokePreview(null)
+    try {
+      const { generateXHdrPng } = await import('./xhdr/generateXHdrPng')
+      const blob = await generateXHdrPng({
+        backgroundCap8: XHDR_BACKGROUND_CAP_8,
+        drawCanvas,
+        sourcePngBytes,
+      })
+      revokePreview({
+        fileName: XHDR_PREVIEW_FILE_NAME,
+        url: URL.createObjectURL(blob),
+      })
+    } catch (encodeError) {
+      setError(
+        encodeError instanceof Error
+          ? encodeError.message
+          : t('xHdr.errors.generate'),
+      )
+    } finally {
+      setIsGenerating(false)
+    }
+  }, [revokePreview, sourcePngBytes, t])
 
   return (
     <div className="app">
@@ -573,8 +633,11 @@ function App() {
         effectType={effectType}
         hasImage={hasImage}
         isGenerating={isGenerating}
+        isGenerateMenuOpen={isGenerateMenuOpen}
         onEffectSelect={handleEffectSelect}
+        onGenerateMenuToggle={handleGenerateMenuToggle}
         onGenerate={handleGenerate}
+        onGenerateX={handleGenerateX}
         onModeSelect={handleModeSelect}
         onOpenFilePicker={openFilePicker}
         onUndo={handleUndo}
@@ -591,7 +654,7 @@ function App() {
       />
 
       {error && <p className="error">{error}</p>}
-      <PreviewModal previewUrl={previewUrl} onClose={() => revokePreviewUrl(null)} />
+      <PreviewModal preview={preview} onClose={() => revokePreview(null)} />
     </div>
   )
 }

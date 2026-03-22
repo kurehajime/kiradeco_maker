@@ -475,6 +475,15 @@ button,
   border-bottom-right-radius: 20px;
 }
 
+.choice-group__action--primary {
+  --button-background: var(--button-main-emphasis);
+  --button-background-hover: var(--button-main-emphasis-hover);
+  --button-edge-color: var(--button-edge-main);
+  --button-shadow-stack: var(--main-shadow-stack);
+  --button-shadow-stack-hover: var(--main-shadow-stack-hover);
+  color: var(--text-cool-accent);
+}
+
 .control-range {
   display: grid;
   grid-template-columns: auto 1fr auto;

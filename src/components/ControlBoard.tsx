@@ -9,8 +9,11 @@ type ControlBoardProps = {
   effectType: EffectType
   hasImage: boolean
   isGenerating: boolean
+  isGenerateMenuOpen: boolean
   onEffectSelect: (nextEffect: EffectType) => Promise<void>
   onGenerate: () => void
+  onGenerateX: () => void
+  onGenerateMenuToggle: () => void
   onModeSelect: (nextMode: EditorMode) => void
   onOpenFilePicker: () => void
   onUndo: () => void
@@ -31,8 +34,11 @@ export function ControlBoard({
   effectType,
   hasImage,
   isGenerating,
+  isGenerateMenuOpen,
   onEffectSelect,
   onGenerate,
+  onGenerateX,
+  onGenerateMenuToggle,
   onModeSelect,
   onOpenFilePicker,
   onUndo,
@@ -104,8 +110,10 @@ export function ControlBoard({
         <button
           type="button"
           className={`mode-button mode-button--action mode-button--primary${hasImage && !isGenerating ? ' mode-button--action-emphasis' : ''}`}
-          onClick={onGenerate}
+          onClick={onGenerateMenuToggle}
           disabled={!hasImage || isGenerating}
+          aria-expanded={isGenerateMenuOpen}
+          aria-controls="generate-menu"
         >
           <CheckIcon className="mode-button__icon" aria-hidden="true" />
           <span className="mode-button__label">
@@ -115,7 +123,29 @@ export function ControlBoard({
       </div>
 
       <div className="control-panel control-panel--detail">
-        {editorMode === 'pen' && (
+        {isGenerateMenuOpen ? (
+          <fieldset
+            id="generate-menu"
+            className="choice-group"
+            aria-label={t('controls.generateOptionsAriaLabel')}
+          >
+            <legend>{t('controls.generateOptionsAriaLabel')}</legend>
+            <button
+              type="button"
+              className="choice-group__action choice-group__action--primary"
+              onClick={onGenerate}
+            >
+              <span>{t('controls.generateImage')}</span>
+            </button>
+            <button
+              type="button"
+              className="choice-group__action"
+              onClick={onGenerateX}
+            >
+              <span>{t('controls.generateXImage')}</span>
+            </button>
+          </fieldset>
+        ) : editorMode === 'pen' ? (
           <>
             <label className="control-range">
               <span>{t('controls.penSize')}</span>
@@ -183,9 +213,7 @@ export function ControlBoard({
               </label>
             </fieldset>
           </>
-        )}
-
-        {editorMode === 'stamp' && (
+        ) : editorMode === 'stamp' ? (
           <>
             <label className="control-range">
               <span>{t('controls.stampSize')}</span>
@@ -236,9 +264,7 @@ export function ControlBoard({
               </label>
             </fieldset>
           </>
-        )}
-
-        {editorMode === 'effect' && (
+        ) : (
           <fieldset className="choice-group">
             <legend>{t('controls.effects')}</legend>
             <button

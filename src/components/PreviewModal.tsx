@@ -2,12 +2,17 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ShareIcon } from '../icons'
 
+export type PreviewAsset = {
+  fileName: string
+  url: string
+}
+
 type PreviewModalProps = {
-  previewUrl: string | null
+  preview: PreviewAsset | null
   onClose: () => void
 }
 
-export function PreviewModal({ previewUrl, onClose }: PreviewModalProps) {
+export function PreviewModal({ preview, onClose }: PreviewModalProps) {
   const [isSharing, setIsSharing] = useState(false)
   const { t } = useTranslation()
 
@@ -16,16 +21,18 @@ export function PreviewModal({ previewUrl, onClose }: PreviewModalProps) {
     [],
   )
 
-  if (!previewUrl) return null
+  if (!preview) return null
 
   const handleShare = async () => {
     if (!canShare || isSharing) return
     setIsSharing(true)
     try {
-      const response = await fetch(previewUrl)
+      const response = await fetch(preview.url)
       const blob = await response.blob()
-      const file = new File([blob], 'kiradeco-maker.jpg', {
-        type: blob.type || 'image/jpeg',
+      const file = new File([blob], preview.fileName, {
+        type:
+          blob.type ||
+          (preview.fileName.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg'),
       })
       if (navigator.canShare?.({ files: [file] })) {
         await navigator.share({
@@ -73,7 +80,7 @@ export function PreviewModal({ previewUrl, onClose }: PreviewModalProps) {
             <span>{isSharing ? t('preview.sharing') : t('preview.share')}</span>
           </button>
         </div>
-        <img className="preview-modal__image" src={previewUrl} alt={t('preview.imageAlt')} />
+        <img className="preview-modal__image" src={preview.url} alt={t('preview.imageAlt')} />
       </div>
     </div>
   )
