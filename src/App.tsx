@@ -552,7 +552,6 @@ function App() {
     const gainmap = buildGainmap()
     if (!gainmap) return
     setError(null)
-    setIsGenerateMenuOpen(false)
     setIsGenerating(true)
     revokePreview(null)
     try {
@@ -560,6 +559,7 @@ function App() {
       const blob = await encodeUltraHDR(baseImage, gainmap)
       revokePreview({
         fileName: ULTRAHDR_PREVIEW_FILE_NAME,
+        kind: 'ultrahdr',
         url: URL.createObjectURL(blob),
       })
     } catch (encodeError) {
@@ -580,7 +580,6 @@ function App() {
       return
     }
     setError(null)
-    setIsGenerateMenuOpen(false)
     setIsGenerating(true)
     revokePreview(null)
     try {
@@ -592,6 +591,7 @@ function App() {
       })
       revokePreview({
         fileName: XHDR_PREVIEW_FILE_NAME,
+        kind: 'xhdr',
         url: URL.createObjectURL(blob),
       })
     } catch (encodeError) {

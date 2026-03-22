@@ -61,6 +61,9 @@ const resources = {
         share: 'シェアする',
         imageAlt: '生成された画像のプレビュー',
         shareText: 'キラデコメーカーで作成した画像です。',
+        xHdrHintTitle: 'X向け画像投稿について',
+        xHdrHintPost: '投稿はブラウザからでないとキラキラしません',
+        xHdrHintView: '閲覧はアプリからでないとキラキラしません',
       },
       ultraHdr: {
         moduleLoad: 'UltraHDRモジュールの読み込みに失敗しました。`make ultrahdr`でビルドしてください。',
@@ -140,6 +143,9 @@ const resources = {
         share: 'Share',
         imageAlt: 'Preview of the generated image',
         shareText: 'This image was created with Kiradeco Maker.',
+        xHdrHintTitle: 'About posting images for X',
+        xHdrHintPost: 'Sparkle appears only when posting from a browser',
+        xHdrHintView: 'Sparkle appears only when viewing in the app',
       },
       ultraHdr: {
         moduleLoad: 'Failed to load the UltraHDR module. Run `make ultrahdr` to build it.',

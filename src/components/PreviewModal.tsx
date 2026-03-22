@@ -4,6 +4,7 @@ import { ShareIcon } from '../icons'
 
 export type PreviewAsset = {
   fileName: string
+  kind: 'ultrahdr' | 'xhdr'
   url: string
 }
 
@@ -15,6 +16,7 @@ type PreviewModalProps = {
 export function PreviewModal({ preview, onClose }: PreviewModalProps) {
   const [isSharing, setIsSharing] = useState(false)
   const { t } = useTranslation()
+  const isXHdrPreview = preview?.kind === 'xhdr'
 
   const canShare = useMemo(
     () => typeof navigator !== 'undefined' && typeof navigator.share === 'function',
@@ -80,6 +82,15 @@ export function PreviewModal({ preview, onClose }: PreviewModalProps) {
             <span>{isSharing ? t('preview.sharing') : t('preview.share')}</span>
           </button>
         </div>
+        {isXHdrPreview && (
+          <div className="preview-modal__hint" role="note">
+            <p className="preview-modal__hint-title">{t('preview.xHdrHintTitle')}</p>
+            <ul className="preview-modal__hint-list">
+              <li>{t('preview.xHdrHintPost')}</li>
+              <li>{t('preview.xHdrHintView')}</li>
+            </ul>
+          </div>
+        )}
         <img className="preview-modal__image" src={preview.url} alt={t('preview.imageAlt')} />
       </div>
     </div>
