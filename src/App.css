@@ -436,6 +436,11 @@ button,
   z-index: 1;
 }
 
+.mode-button--action-emphasis.mode-button--active,
+.mode-button--action-emphasis.mode-button--active.mode-button--primary {
+  color: var(--bg-soft-pink);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .image-intro__button,
   .mode-button--action-emphasis {

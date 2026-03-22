@@ -69,7 +69,7 @@ export function ControlBoard({
         <div className="mode-button-cluster" role="group" aria-label={t('controls.modesAriaLabel')}>
           <button
             type="button"
-            className={`mode-button mode-button--joined mode-button--joined-start${editorMode === 'pen' ? ' mode-button--active' : ''}`}
+            className={`mode-button mode-button--joined mode-button--joined-start${!isGenerateMenuOpen && editorMode === 'pen' ? ' mode-button--active' : ''}`}
             onClick={() => {
               onModeSelect('pen')
             }}
@@ -79,7 +79,7 @@ export function ControlBoard({
           </button>
           <button
             type="button"
-            className={`mode-button mode-button--joined${editorMode === 'stamp' ? ' mode-button--active' : ''}`}
+            className={`mode-button mode-button--joined${!isGenerateMenuOpen && editorMode === 'stamp' ? ' mode-button--active' : ''}`}
             onClick={() => {
               onModeSelect('stamp')
             }}
@@ -89,7 +89,7 @@ export function ControlBoard({
           </button>
           <button
             type="button"
-            className={`mode-button mode-button--joined mode-button--joined-end${editorMode === 'effect' ? ' mode-button--active' : ''}`}
+            className={`mode-button mode-button--joined mode-button--joined-end${!isGenerateMenuOpen && editorMode === 'effect' ? ' mode-button--active' : ''}`}
             onClick={() => {
               onModeSelect('effect')
             }}
@@ -109,7 +109,7 @@ export function ControlBoard({
         </button>
         <button
           type="button"
-          className={`mode-button mode-button--action mode-button--primary${hasImage && !isGenerating ? ' mode-button--action-emphasis' : ''}`}
+          className={`mode-button mode-button--action mode-button--primary${hasImage && !isGenerating ? ' mode-button--action-emphasis' : ''}${isGenerateMenuOpen ? ' mode-button--active' : ''}`}
           onClick={onGenerateMenuToggle}
           disabled={!hasImage || isGenerating}
           aria-expanded={isGenerateMenuOpen}
@@ -135,6 +135,7 @@ export function ControlBoard({
               className="choice-group__action choice-group__action--primary"
               onClick={onGenerate}
             >
+              <ImageIcon className="choice-group__icon" aria-hidden="true" />
               <span>{t('controls.generateImage')}</span>
             </button>
             <button
@@ -142,6 +143,7 @@ export function ControlBoard({
               className="choice-group__action"
               onClick={onGenerateX}
             >
+              <ImageIcon className="choice-group__icon" aria-hidden="true" />
               <span>{t('controls.generateXImage')}</span>
             </button>
           </fieldset>

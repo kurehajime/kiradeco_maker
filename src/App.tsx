@@ -541,7 +541,7 @@ function App() {
   const handleGenerateMenuToggle = useCallback(() => {
     if (!hasImage || isGenerating) return
     setError(null)
-    setIsGenerateMenuOpen((current) => !current)
+    setIsGenerateMenuOpen(true)
   }, [hasImage, isGenerating])
 
   const handleGenerate = useCallback(async () => {
