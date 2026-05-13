@@ -18,13 +18,24 @@ const XHDR_BACKGROUND_CAP_8 = 255
 const ULTRAHDR_PREVIEW_FILE_NAME = 'kiradeco-maker.jpg'
 const XHDR_PREVIEW_FILE_NAME = 'kiradeco-maker-x.png'
 
+const getInitialHdrSupport = () => {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+    return false
+  }
+
+  try {
+    return window.matchMedia('(dynamic-range: high)').matches
+  } catch {
+    return false
+  }
+}
+
 function App() {
   const { i18n, t } = useTranslation()
-  const [imageName, setImageName] = useState<string | null>(null)
   const [preview, setPreview] = useState<PreviewAsset | null>(null)
   const [sourcePngBytes, setSourcePngBytes] = useState<Uint8Array | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [isHdrSupported, setIsHdrSupported] = useState<boolean | null>(null)
+  const [isHdrSupported, setIsHdrSupported] = useState(getInitialHdrSupport)
   const [isGenerating, setIsGenerating] = useState(false)
   const [isGenerateMenuOpen, setIsGenerateMenuOpen] = useState(false)
   const [undoCount, setUndoCount] = useState(0)
@@ -48,10 +59,7 @@ function App() {
     data: Uint8ClampedArray
   } | null>(null)
 
-  const hasImage = useMemo(() => {
-    const canvas = baseCanvasRef.current
-    return canvas !== null && canvas.width > 0 && canvas.height > 0
-  }, [imageName])
+  const hasImage = canvasSize !== null
 
   const revokePreview = useCallback((nextPreview: PreviewAsset | null) => {
     setPreview((currentPreview) => {
@@ -113,7 +121,11 @@ function App() {
     if (drawContext) {
       drawContext.clearRect(0, 0, width, height)
     }
-    setCanvasSize({ width, height })
+    const nextCanvasSize = { width, height }
+    const defaultToolSizes = getDefaultToolSizes(width, getSizeBounds(nextCanvasSize))
+    setCanvasSize(nextCanvasSize)
+    setPenSize(defaultToolSizes.pen)
+    setStampSize(defaultToolSizes.stamp)
   }, [])
 
   const clearUndoHistory = useCallback(() => {
@@ -173,7 +185,6 @@ function App() {
         baseContext.clearRect(0, 0, image.width, image.height)
         baseContext.drawImage(image, 0, 0)
         setSourcePngBytes(pngBytes)
-        setImageName(file.name)
       } catch (loadError) {
         setError(loadError instanceof Error ? loadError.message : t('app.errors.imageLoad'))
         setCanvasSize(null)
@@ -198,13 +209,6 @@ function App() {
   const sizeBounds = useMemo(() => {
     return getSizeBounds(canvasSize)
   }, [canvasSize])
-
-  useEffect(() => {
-    if (!canvasSize) return
-    const defaultToolSizes = getDefaultToolSizes(canvasSize.width, sizeBounds)
-    setPenSize(defaultToolSizes.pen)
-    setStampSize(defaultToolSizes.stamp)
-  }, [canvasSize, sizeBounds])
 
   const getCanvasPoint = useCallback((event: React.PointerEvent<HTMLCanvasElement>) => {
     const canvas = drawCanvasRef.current
@@ -231,7 +235,6 @@ function App() {
 
   useEffect(() => {
     if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
-      setIsHdrSupported(false)
       return
     }
 
@@ -239,15 +242,12 @@ function App() {
     try {
       mediaQuery = window.matchMedia('(dynamic-range: high)')
     } catch {
-      setIsHdrSupported(false)
       return
     }
 
     const updateHdrSupport = () => {
       setIsHdrSupported(mediaQuery.matches)
     }
-
-    updateHdrSupport()
 
     if (typeof mediaQuery.addEventListener === 'function') {
       mediaQuery.addEventListener('change', updateHdrSupport)
