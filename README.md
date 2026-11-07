@@ -10,7 +10,6 @@ https://kurehajime.github.io/kiradeco_maker/
 
 ```
 git clone https://github.com/MONOGRID/libultrahdr-wasm.git vendor/libultrahdr-wasm
-git -C vendor/libultrahdr-wasm apply ../../.github/patches/libultrahdr-wasm-cmath.patch
 make ultrahdr
 npm install
 ```
@@ -18,7 +17,6 @@ npm install
 `make ultrahdr`は`vendor/libultrahdr-wasm`で`libultrahdr-esm`のみビルドし、成果物を`public/ultrahdr`へコピーします。
 アプリは`public/ultrahdr/libultrahdr-esm.js`を読み込むため、出力ファイル名が異なる場合は`src/ultrahdr.ts`と合わせて調整してください。
 `emscripten`, `meson`, `ninja`が必要です。必要に応じて`Makefile`の`ULTRAHDR_BUILD_DIR`や`ULTRAHDR_BUILD_CMD`を変更できます。
-パッチは依存ソースに`<cmath>`と`std::exp2`を補い、Emscripten 7以降のコンパイルエラーを防ぎます。
 Emscriptenのキャッシュは`vendor/libultrahdr-wasm/.emscripten_cache`へ作成します。
 
 ネットワークに出られない環境では、以下を`vendor/libultrahdr-wasm/subprojects/packagecache`へ手動で配置してください。
