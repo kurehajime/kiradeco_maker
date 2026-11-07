@@ -40,6 +40,10 @@ jobs:
       - name: Clone libultrahdr-wasm
         run: git clone https://github.com/MONOGRID/libultrahdr-wasm.git vendor/libultrahdr-wasm
 
+      # Upstream uses exp2 without including its declaration (Emscripten 7+).
+      - name: Patch libultrahdr-wasm math declarations
+        run: git -C vendor/libultrahdr-wasm apply "$GITHUB_WORKSPACE/.github/patches/libultrahdr-wasm-cmath.patch"
+
       - name: Cache libjpeg-turbo wrap sources
         run: |
           mkdir -p vendor/libultrahdr-wasm/subprojects/packagecache

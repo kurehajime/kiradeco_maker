@@ -1,0 +1,27 @@
+diff --git a/libultrahdr-wasm.cpp b/libultrahdr-wasm.cpp
+index f7d1229..2391782 100644
+--- a/libultrahdr-wasm.cpp
++++ b/libultrahdr-wasm.cpp
+@@ -1,3 +1,4 @@
++#include <cmath>
+ #include <emscripten/bind.h>
+ #include <iostream>
+ // #include <fstream>
+@@ -302,13 +303,13 @@ auto appendGainMap(int width, int height,
+
+   ultrahdr_metadata_struct meta = {
+       .version = "1.0",
+-      .maxContentBoost = exp2(maxContentBoost),
+-      .minContentBoost = exp2(minContentBoost),
++      .maxContentBoost = std::exp2(maxContentBoost),
++      .minContentBoost = std::exp2(minContentBoost),
+       .gamma = gamma,
+       .offsetSdr = offsetSdr,
+       .offsetHdr = offsetHdr,
+-      .hdrCapacityMin = exp2(hdrCapacityMin),
+-      .hdrCapacityMax = exp2(hdrCapacityMax)};
++      .hdrCapacityMin = std::exp2(hdrCapacityMin),
++      .hdrCapacityMax = std::exp2(hdrCapacityMax)};
+
+   UhdrCompressedStructWrapper outJpeg(width, height);
+   outJpeg.allocateMemory();
