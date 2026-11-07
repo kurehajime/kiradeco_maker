@@ -35,7 +35,8 @@ jobs:
       - name: Setup Emscripten
         uses: mymindstorm/setup-emsdk@v16
         with:
-          version: latest
+          # libultrahdr-wasm is incompatible with Emscripten 7.
+          version: '6.0.13'
 
       - name: Clone libultrahdr-wasm
         run: git clone https://github.com/MONOGRID/libultrahdr-wasm.git vendor/libultrahdr-wasm

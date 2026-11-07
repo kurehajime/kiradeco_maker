@@ -23,6 +23,8 @@ updates:
     schedule:
       interval: "weekly"
     ignore:
+      # Update the Emscripten setup action manually after checking SDK compatibility.
+      - dependency-name: "mymindstorm/setup-emsdk"
       - dependency-name: "*"
         update-types:
           - "version-update:semver-minor"
